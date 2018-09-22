@@ -105,7 +105,7 @@ def train(x_train,y_train,x_test,y_test,x,y,epochs):
     history_3 = model_3.fit( x_train, y_train, batch_size=100, epochs=epochs, verbose=1, validation_data=(x_test,y_test) )
     
     
-    plt.plot(history_1.history['val_loss'], color = 'red')
+    plt.plot(history_1.history['val_loss'], color = 'blueviolet')
     plt.plot(history_2.history['val_loss'], color = 'brown')
     plt.plot(history_3.history['val_loss'], color = 'green')
     
@@ -116,7 +116,7 @@ def train(x_train,y_train,x_test,y_test,x,y,epochs):
     y_3 = model_3.predict(x)
     
     plt.plot(y)
-    plt.plot(y_1, color = 'red')
+    plt.plot(y_1, color = 'blueviolet')
     plt.plot(y_2, color = 'brown')
     plt.plot(y_3, color = 'green')
     
