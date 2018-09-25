@@ -83,12 +83,16 @@ def train(x_train,y_train,x_test,y_test,epochs):
     history_2 = model_2.fit( x_train, y_train, batch_size=1000, epochs=epochs, verbose=1, validation_data=(x_test,y_test) )
     
     
-    plt.plot(history_1.history['val_loss'], color = 'blueviolet')
-    plt.plot(history_2.history['val_loss'], color = 'blue')
+    plt.plot(history_1.history['val_loss'], color = 'blueviolet', label='cnn-model-1-deep')
+    plt.plot(history_2.history['val_loss'], color = 'blue', label='cnn-model-1-shallow')
+    plt.title("Val Loss Plot")
+    plt.legend()
     plt.show()     
     
-    plt.plot(history_1.history['val_acc'], color = 'blueviolet')
-    plt.plot(history_2.history['val_acc'], color = 'blue')
+    plt.plot(history_1.history['val_acc'], color = 'blueviolet', label='cnn-model-1-deep')
+    plt.plot(history_2.history['val_acc'], color = 'blue', label='cnn-model-2-shallow')
+    plt.title("Val Acc Plot")
+    plt.legend()
     plt.show() 
     
 def main():   

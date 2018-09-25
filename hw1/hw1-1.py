@@ -105,14 +105,11 @@ def train(x_train,y_train,x_test,y_test,x,y,epochs):
     history_3 = model_3.fit( x_train, y_train, batch_size=100, epochs=epochs, verbose=1, validation_data=(x_test,y_test) )
     
     
-    plt.plot(history_1.history['val_loss'], color = 'blueviolet', label='model-1-deep')
-    plt.plot(history_2.history['val_loss'], color = 'brown', label='model-2-mediumn')
-    plt.plot(history_3.history['val_loss'], color = 'green', label='model-1-shallow')
-    
+    plt.plot(history_1.history['val_loss'], color = 'blueviolet', label='dnn-model-1-deep')
+    plt.plot(history_2.history['val_loss'], color = 'brown', label='dnn-model-2-mediumn')
+    plt.plot(history_3.history['val_loss'], color = 'green', label='dnn-model-1-shallow')
     plt.title("Val Loss Plot")
-
     plt.legend()
-    
     plt.show()
     
     y_1 = model_1.predict(x)
@@ -120,12 +117,10 @@ def train(x_train,y_train,x_test,y_test,x,y,epochs):
     y_3 = model_3.predict(x)
     
     plt.plot(y, color = 'blueviolet', label='ground_truth')
-    plt.plot(y_1, color = 'blueviolet', label='model-1-deep')
-    plt.plot(y_2, color = 'brown', label='model-2-mediumn')
-    plt.plot(y_3, color = 'green', label='model-1-shallow')
-    
+    plt.plot(y_1, color = 'blueviolet', label='dnn-model-1-deep')
+    plt.plot(y_2, color = 'brown', label='dnn-model-2-mediumn')
+    plt.plot(y_3, color = 'green', label='dnn-model-1-shallow')
     plt.title("Simulated Function Plot")
-
     plt.legend()
 
     plt.show()
