@@ -23,16 +23,18 @@ def model_generator_1():
     print('model build')
     model = Sequential()
     model.add( Conv2D( filters=28,kernel_size=(3,3),input_shape=(28,28,1),padding='same' ) ) 
-    model.add( Activation('relu') ) 
+    model.add( Activation('relu') )
 
     model.add( Conv2D( filters=28,kernel_size=(3,3) ) )
     model.add( Activation('relu') ) 
+    model.add( MaxPooling2D(padding = 'same') )
 
     model.add( Conv2D( filters=28,kernel_size=(3,3) ) )
     model.add( Activation('relu') ) 
     
     model.add( Conv2D( filters=28,kernel_size=(3,3) ) )
     model.add( Activation('relu') )
+    model.add( MaxPooling2D(padding = 'same') )
     
     model.add( Conv2D( filters=28,kernel_size=(3,3) ) )
     model.add( Activation('relu') )
@@ -53,12 +55,14 @@ def model_generator_2():
     model = Sequential()
     model.add( Conv2D( filters=28,kernel_size=(5,5),input_shape=(28,28,1),padding='same' ) ) 
     model.add( Activation('relu') ) 
+    model.add( MaxPooling2D( padding = 'same') )
 
     model.add( Conv2D( filters=28,kernel_size=(5,5) ) )
     model.add( Activation('relu') ) 
 
     model.add( Conv2D( filters=28,kernel_size=(5,5) ) )
     model.add( Activation('relu') ) 
+    model.add( MaxPooling2D( padding = 'same') )
     
     model.add( Flatten() )
 
