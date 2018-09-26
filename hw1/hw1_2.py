@@ -20,11 +20,11 @@ def generate_data():
     return (x_train, y_train, x_test, y_test)
 
 
-def model_generator_1():
+def model_generator_1(input_shape, no_classes):
     print('model_1 build')
     model = Sequential()
     model.add(Conv2D(filters=28, kernel_size=(3, 3),
-                     input_shape=(28, 28, 1), padding='same'))
+                     input_shape=input_shape, padding='same'))
     model.add(Activation('relu'))
 
     model.add(Conv2D(filters=28, kernel_size=(3, 3)))
@@ -46,7 +46,7 @@ def model_generator_1():
     model.add(Dense(1024))
     model.add(Activation('relu'))
 
-    model.add(Dense(10, activation='softmax'))
+    model.add(Dense(no_classes, activation='softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
 
@@ -54,11 +54,11 @@ def model_generator_1():
     return model
 
 
-def model_generator_2():
+def model_generator_2(input_shape, no_classes):
     print('model_2 build')
     model = Sequential()
     model.add(Conv2D(filters=28, kernel_size=(5, 5),
-                     input_shape=(28, 28, 1), padding='same'))
+                     input_shape=input_shape, padding='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(padding='same'))
 
@@ -74,7 +74,7 @@ def model_generator_2():
     model.add(Dense(1024))
     model.add(Activation('relu'))
 
-    model.add(Dense(10, activation='softmax'))
+    model.add(Dense(no_classes, activation='softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
 
@@ -82,10 +82,10 @@ def model_generator_2():
     return model
 
 
-def model_generator_3():
+def model_generator_3(input_shape, no_classes):
     print('model_3 build')
     model = Sequential()
-    model.add(InputLayer((28, 28, 1)))
+    model.add(InputLayer(input_shape))
     model.add(Flatten())
 
     model.add(Dense(256))
@@ -97,7 +97,7 @@ def model_generator_3():
     model.add(Dense(256))
     model.add(Activation('relu'))
 
-    model.add(Dense(10, activation='softmax'))
+    model.add(Dense(no_classes, activation='softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
 
@@ -105,10 +105,10 @@ def model_generator_3():
     return model
 
 
-def model_generator_4():
+def model_generator_4(input_shape, no_classes):
     print('model_4 build')
     model = Sequential()
-    model.add(InputLayer((28, 28, 1)))
+    model.add(InputLayer(input_shape))
     model.add(Flatten())
 
     # Dense Layer * 12
@@ -116,7 +116,7 @@ def model_generator_4():
         model.add(Dense(128))
         model.add(Activation('relu'))
 
-    model.add(Dense(10, activation='softmax'))
+    model.add(Dense(no_classes, activation='softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
 
@@ -130,10 +130,12 @@ plt.switch_backend('agg')
 
 def train(x_train, y_train, x_test, y_test, epochs):
 
-    model_1 = model_generator_1()
-    model_2 = model_generator_2()
-    model_3 = model_generator_3()
-    model_4 = model_generator_4()
+    input_shape, no_classes = x_train.shape[1:], y_train.shape[1]
+
+    model_1 = model_generator_1(input_shape, no_classes)
+    model_2 = model_generator_2(input_shape, no_classes)
+    model_3 = model_generator_3(input_shape, no_classes)
+    model_4 = model_generator_4(input_shape, no_classes)
 
     history_1 = model_1.fit(x_train, y_train, batch_size=1000,
                             epochs=epochs, verbose=1, validation_data=(x_test, y_test))
