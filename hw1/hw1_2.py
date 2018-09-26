@@ -128,7 +128,7 @@ import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
 
-def train(x_train, y_train, x_test, y_test, epochs):
+def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 
     input_shape, no_classes = x_train.shape[1:], y_train.shape[1]
 
@@ -154,11 +154,11 @@ def train(x_train, y_train, x_test, y_test, epochs):
              color='pink', label='dnn-model-1-shallow')
     plt.plot(history_4.history['val_loss'],
              color='red', label='dnn-model-2-deep')
-    plt.title("Val Loss Plot")
+    plt.title("%s Val Loss Plot", datasetName)
     plt.legend()
     # plt.show()
-    plt.savefig('cnn_val_loss%i_comparison_of_deep_and_shallow.png' %
-                train.counter)
+    plt.savefig('cnn_%s_val_loss%i_comparison_of_deep_and_shallow.png' %
+                (datasetName, train.counter))
     plt.gcf().clear()
 
     plt.plot(history_1.history['val_acc'],
@@ -169,11 +169,11 @@ def train(x_train, y_train, x_test, y_test, epochs):
              color='pink', label='dnn-model-1-shallow')
     plt.plot(history_4.history['val_acc'],
              color='red', label='dnn-model-2-deep')
-    plt.title("Val Acc Plot")
+    plt.title("%s Val Acc Plot", datasetName)
     plt.legend()
     # plt.show()
-    plt.savefig('cnn_val_acc_%i_comparison_of_deep_and_shallow.png' %
-                train.counter)
+    plt.savefig('cnn_%s_val_acc_%i_comparison_of_deep_and_shallow.png' %
+                (datasetName, train.counter))
     plt.gcf().clear()
 
     train.counter += 1
@@ -182,7 +182,7 @@ def train(x_train, y_train, x_test, y_test, epochs):
 def main():
     train.counter = 0
     x_train, y_train, x_test, y_test = generate_data()
-    train(x_train, y_train, x_test, y_test, 10)
+    train(x_train, y_train, x_test, y_test, 10, 'MNIST')
 
 
 if __name__ == '__main__':
