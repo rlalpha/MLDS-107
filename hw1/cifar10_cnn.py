@@ -35,5 +35,5 @@ y_test = np_utils.to_categorical(y_test)
 
 
 cnn.train.counter = 0
-cnn.train(x_train, y_train, x_test, y_test, 10)
+cnn.train(x_train, y_train, x_test, y_test, 10, 'cifar')
 

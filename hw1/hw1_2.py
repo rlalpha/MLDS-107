@@ -154,10 +154,10 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
              color='pink', label='dnn-model-1-shallow')
     plt.plot(history_4.history['val_loss'],
              color='red', label='dnn-model-2-deep')
-    plt.title("%s Val Loss Plot", datasetName)
+    plt.title("%s Val Loss Plot"%datasetName)
     plt.legend()
     # plt.show()
-    plt.savefig('cnn_%s_val_loss%i_comparison_of_deep_and_shallow.png' %
+    plt.savefig('cnn_%s_val_loss_%i_comparison_of_deep_and_shallow.png' %
                 (datasetName, train.counter))
     plt.gcf().clear()
 
@@ -169,7 +169,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
              color='pink', label='dnn-model-1-shallow')
     plt.plot(history_4.history['val_acc'],
              color='red', label='dnn-model-2-deep')
-    plt.title("%s Val Acc Plot", datasetName)
+    plt.title("%s Val Acc Plot"%datasetName)
     plt.legend()
     # plt.show()
     plt.savefig('cnn_%s_val_acc_%i_comparison_of_deep_and_shallow.png' %
@@ -182,7 +182,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 def main():
     train.counter = 0
     x_train, y_train, x_test, y_test = generate_data()
-    train(x_train, y_train, x_test, y_test, 10, 'MNIST')
+    train(x_train, y_train, x_test, y_test, 100, 'mnist')
 
 
 if __name__ == '__main__':
