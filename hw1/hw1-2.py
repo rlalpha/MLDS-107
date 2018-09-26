@@ -133,7 +133,9 @@ def train(x_train,y_train,x_test,y_test,epochs):
     plt.plot(history_4.history['val_loss'], color = 'red', label='dnn-model-2-deep')
     plt.title("Val Loss Plot")
     plt.legend()
-    plt.show()     
+    # plt.show()  
+    plt.savefig('cnn_val_loss%i_comparison_of_deep_and_shallow.png' %
+                train.counter)   
     
     plt.plot(history_1.history['val_acc'], color = 'blueviolet', label='cnn-model-1-deep')
     plt.plot(history_2.history['val_acc'], color = 'blue', label='cnn-model-2-shallow')
@@ -141,9 +143,14 @@ def train(x_train,y_train,x_test,y_test,epochs):
     plt.plot(history_4.history['val_acc'], color = 'red', label='dnn-model-2-deep')
     plt.title("Val Acc Plot")
     plt.legend()
-    plt.show() 
+    # plt.show() 
+    plt.savefig('cnn_val_acc_%i_comparison_of_deep_and_shallow.png' %
+                train.counter)
+
+    train.counter += 1
     
 def main():   
+    train.counter = 0
     x_train,y_train,x_test,y_test = generate_data()
     train(x_train,y_train,x_test,y_test,10)
     
