@@ -94,8 +94,8 @@ def model_generator_3():
     
 import matplotlib.pyplot as plt          
 
-def train(x_train,y_train,x_test,y_test,x,y,epochs):
-    
+def train(x_train,y_train,x_test,y_test,x,y,epochs, simulatedFunctionName = 'default'):
+
     model_1 = model_generator_1()
     model_2 = model_generator_2()
     model_3 = model_generator_3()
@@ -110,27 +110,33 @@ def train(x_train,y_train,x_test,y_test,x,y,epochs):
     plt.plot(history_3.history['val_loss'], color = 'green', label='dnn-model-1-shallow')
     plt.title("Val Loss Plot")
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig('dnn_val_loss_%i_comparison_of_deep_and_shallow.png'%train.counter)
+    plt.gcf().clear()
     
     y_1 = model_1.predict(x)
     y_2 = model_2.predict(x)
     y_3 = model_3.predict(x)
     
-    plt.plot(y, color = 'blueviolet', label='ground_truth')
+    plt.plot(y, color = 'black', label='ground_truth')
     plt.plot(y_1, color = 'blueviolet', label='dnn-model-1-deep')
     plt.plot(y_2, color = 'brown', label='dnn-model-2-mediumn')
     plt.plot(y_3, color = 'green', label='dnn-model-1-shallow')
-    plt.title("Simulated Function Plot")
+    plt.title("Simulated Function %s Plot"%simulatedFunctionName)
     plt.legend()
+    # plt.show()
+    plt.savefig('dnn_simulation_%i_comparison_of_deep_and_shallow.png'%train.counter)
+    plt.gcf().clear()
 
-    plt.show()
+    train.counter += 1
     
     
-def main():   
+def main():
+    train.counter = 0
     x_train,y_train,x_test,y_test,x,y = generate_data_1()
-    train(x_train,y_train,x_test,y_test,x,y,50)
+    train(x_train,y_train,x_test,y_test,x,y,50, simulatedFunctionName = 'sin(5*pi*x)/(5*pi*x)')
     x_train,y_train,x_test,y_test,x,y = generate_data_2()
-    train(x_train,y_train,x_test,y_test,x,y,150)
+    train(x_train,y_train,x_test,y_test,x,y,150, simulatedFunctionName = 'sign(sin(5*pi*x))')
     
 if __name__ == '__main__':
     main()
