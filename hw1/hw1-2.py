@@ -125,6 +125,7 @@ def model_generator_4():
 
 
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 
 def train(x_train, y_train, x_test, y_test, epochs):
@@ -156,6 +157,7 @@ def train(x_train, y_train, x_test, y_test, epochs):
     # plt.show()
     plt.savefig('cnn_val_loss%i_comparison_of_deep_and_shallow.png' %
                 train.counter)
+    plt.gcf().clear()
 
     plt.plot(history_1.history['val_acc'],
              color='blueviolet', label='cnn-model-1-deep')
@@ -170,6 +172,7 @@ def train(x_train, y_train, x_test, y_test, epochs):
     # plt.show()
     plt.savefig('cnn_val_acc_%i_comparison_of_deep_and_shallow.png' %
                 train.counter)
+    plt.gcf().clear()
 
     train.counter += 1
 
