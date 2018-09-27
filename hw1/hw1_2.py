@@ -214,7 +214,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 def main():
     train.counter = 0
     x_train, y_train, x_test, y_test = generate_data()
-    train(x_train, y_train, x_test, y_test, 100, 'mnist')
+    train(x_train, y_train, x_test, y_test, 20, 'mnist')
 
 
 if __name__ == '__main__':
