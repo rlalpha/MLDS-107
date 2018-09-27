@@ -11,6 +11,9 @@ from keras.layers import Dense, Dropout, Activation, Flatten, InputLayer
 from hw1_2 import model_generator_1, model_generator_2
 
 
+# visualizing graph arch
+from keras.utils import plot_model
+
 def model_generator_3(input_shape, no_classes):
 	print('model_3 build')
 	model = Sequential()
@@ -62,6 +65,10 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 	model_2 = model_generator_2(input_shape, no_classes)
 	model_3 = model_generator_3(input_shape, no_classes)
 	model_4 = model_generator_4(input_shape, no_classes)
+
+	models = [model_1, model_2, model_3, model_4]
+	for i in range(len(models)):
+		plot_model(models[i], to_file='cnn_%s_model_%i.png'%(datasetName, i))
 
 	history_1 = model_1.fit(x_train, y_train, batch_size=1000,
 							epochs=epochs, verbose=1, validation_data=(x_test, y_test))
