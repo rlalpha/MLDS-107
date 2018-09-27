@@ -146,6 +146,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
     history_4 = model_4.fit(x_train, y_train, batch_size=1000,
                             epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
+    # val acc of all models
     plt.plot(history_1.history['val_loss'],
              color='blueviolet', label='cnn-model-1-deep')
     plt.plot(history_2.history['val_loss'],
@@ -156,11 +157,11 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
              color='red', label='dnn-model-2-deep')
     plt.title("%s Val Loss Plot"%datasetName)
     plt.legend()
-    # plt.show()
     plt.savefig('cnn_%s_val_loss_%i_comparison_of_deep_and_shallow.png' %
                 (datasetName, train.counter))
     plt.gcf().clear()
 
+    # val acc of all models
     plt.plot(history_1.history['val_acc'],
              color='blueviolet', label='cnn-model-1-deep')
     plt.plot(history_2.history['val_acc'],
@@ -171,10 +172,11 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
              color='red', label='dnn-model-2-deep')
     plt.title("%s Val Acc Plot"%datasetName)
     plt.legend()
-    # plt.show()
     plt.savefig('cnn_%s_val_acc_%i_comparison_of_deep_and_shallow.png' %
                 (datasetName, train.counter))
+    plt.gcf().clear()
 
+    # train loss of all models
     plt.plot(history_1.history['loss'],
              color='blueviolet', label='cnn-model-1-deep')
     plt.plot(history_2.history['loss'],
@@ -190,6 +192,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
                 (datasetName, train.counter))
     plt.gcf().clear()
 
+    # train acc of all models
     plt.plot(history_1.history['acc'],
              color='blueviolet', label='cnn-model-1-deep')
     plt.plot(history_2.history['acc'],
