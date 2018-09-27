@@ -112,7 +112,7 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 			 color='red', label='dnn-model-2-deep')
 	plt.title("%s Loss Plot"%datasetName)
 	plt.legend()
-	plt.savefig('cnn_%s_val_loss_%i_comparison_of_deep_and_shallow.png' %
+	plt.savefig('cnn_%s_loss_%i_comparison_of_deep_and_shallow.png' %
 				(datasetName, train.counter))
 	plt.gcf().clear()
 
