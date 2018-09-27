@@ -98,8 +98,36 @@ def train(x_train, y_train, x_test, y_test, epochs, datasetName):
 	plt.title("%s Val Acc Plot"%datasetName)
 	plt.legend()
 	# plt.show()
-	plt.savefig('cnn_%s_val_acc_%i_comparison_of_deep_and_shallow.png' %
-				(datasetName, train.counter))
+	plt.savefig('cnn_%s_val_acc_%i_comparison_of_deep_and_shallow.png' % (datasetName, train.counter))
+
+    plt.plot(history_1.history['loss'],
+             color='blueviolet', label='cnn-model-1-deep')
+    plt.plot(history_2.history['loss'],
+             color='blue', label='cnn-model-2-shallow')
+    plt.plot(history_3.history['loss'],
+             color='pink', label='dnn-model-1-shallow')
+    plt.plot(history_4.history['loss'],
+             color='red', label='dnn-model-2-deep')
+    plt.title("%s Loss Plot"%datasetName)
+    plt.legend()
+    # plt.show()
+    plt.savefig('cnn_%s_val_loss_%i_comparison_of_deep_and_shallow.png' %
+                (datasetName, train.counter))
+    plt.gcf().clear()
+
+    plt.plot(history_1.history['acc'],
+             color='blueviolet', label='cnn-model-1-deep')
+    plt.plot(history_2.history['acc'],
+             color='blue', label='cnn-model-2-shallow')
+    plt.plot(history_3.history['acc'],
+             color='pink', label='dnn-model-1-shallow')
+    plt.plot(history_4.history['acc'],
+             color='red', label='dnn-model-2-deep')
+    plt.title("%s Acc Plot"%datasetName)
+    plt.legend()
+    # plt.show()
+    plt.savefig('cnn_%s_acc_%i_comparison_of_deep_and_shallow.png' %
+                (datasetName, train.counter))
 	plt.gcf().clear()
 
 	train.counter += 1
