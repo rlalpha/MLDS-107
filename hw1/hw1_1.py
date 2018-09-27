@@ -3,6 +3,8 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Activation
 
+# visualizing graph arch
+from keras.utils import plot_model
 
 def generate_data_1():
     x = np.linspace(0.00001, 1, 9999)
@@ -103,6 +105,10 @@ def train(x_train, y_train, x_test, y_test, x, y, epochs, batch_size=100, functi
     model_1 = model_generator_1()
     model_2 = model_generator_2()
     model_3 = model_generator_3()
+
+    models = [model_1, model_2, model_3]
+    for i in range(len(models)):
+        plot_model(models[i], to_file='dnn_%s_model_%i.png'%(train.counter, i))
 
     history_1 = model_1.fit(x_train, y_train,
                             batch_size=batch_size,
