@@ -48,7 +48,7 @@ class CNN(object):
 			logits = tf.layers.dense(inputs = dense, units = 10)
 
 		# Loss
-		self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels = self.y, logits = logits))
+		self.loss = tf.reduce_mean(tf.losses.softmax_cross_entropy(self.y, logits = logits))
 
 		# Gradient
 		parms = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope = "parms")
