@@ -44,7 +44,7 @@ def model_generator():
   
   
 def train(x_train,y_train,x_test,y_test,epochs):
-    weights = [[],[],[],[]]
+    weights = [[],[],[]]
     save_weights = LambdaCallback(
         on_epoch_end = lambda batch, 
         logs:[ weights[i].append(model.layers[2*i].get_weights()) for i in range (layer_num) ] 
@@ -80,14 +80,35 @@ def Pca(w, i):
             x = pca.transform(layer[i])
         pca_data.append(x)
     return pca_data
+
+  
+def Pca_w(w):
+    print('pca_w')
+    pca = PCA(n_components=2)
+    pca_data = []
+    data = []
+    for times in range(len(w)):
+        layer = w[times]
+        for k in range(len(layer[0])):  #epochs_num
+            data.append([])
+            for j in range(len(layer)):  #layer_num
+                data[k].append(layer[j][k])
+            data[k] = flatten(data[k])
             
-     
+        if times == 0:
+            x = pca.fit_transform(data)
+        else:
+            x = pca.transform(data)
+        pca_data.append(x)
+    return pca_data 
+    
+    
 def print_xy(coordinate, loss):
     color = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
     for i in range(len(coordinate)):
         x_y = np.array(coordinate[i])
         x, y = x_y.T     
-        plt.scatter(x, y, c=color[i], marker=',')
+        plt.scatter(x, y, c=color[i], marker='.')
         for j in range (len(x)): 
             plt.text(x[j], y[j], round(loss[i][j],3), fontdict={'color':color[i]})
     plt.show()
@@ -103,9 +124,12 @@ def main():
         w.append(weights)
         his.append(history.history['val_loss'])
     coor = Pca(w,0)
+    print('layer0')
     print_xy(coor, his)
+    coor2 = Pca_w(w)
+    print('whole')
+    print_xy(coor2, his)
     
     
 if __name__ == '__main__':
     main()
-  
