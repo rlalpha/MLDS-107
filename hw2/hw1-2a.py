@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 
 
 layer_num = 3
-epochs = 8
+epochs = 10
 times = 8
 
 def generate_data():
@@ -86,8 +86,8 @@ def Pca_w(w):
     print('pca_w')
     pca = PCA(n_components=2)
     pca_data = []
-    data = []
     for times in range(len(w)):
+        data = []
         layer = w[times]
         for k in range(len(layer[0])):  #epochs_num
             data.append([])
@@ -133,3 +133,4 @@ def main():
     
 if __name__ == '__main__':
     main()
+  
