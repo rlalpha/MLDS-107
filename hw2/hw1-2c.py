@@ -62,9 +62,9 @@ class CNN(object):
 
 		self.loss_train_op = self.loss_optimizer.minimize(self.loss)
 		self.gradient_train_op = self.gradient_optimizer.minimize(self.squared_gradient)
-		self.flatten_parms = tf.concat([tf.reshape(parm, [-1]) for parm in parms], axis = 0)
+		# self.flatten_parms = tf.concat([tf.reshape(parm, [-1]) for parm in parms], axis = 0)
 
-		self.hessian = tf.hessians(self.loss, self.flatten_parms)
+		self.hessian = tf.hessians(self.loss, parms)
 
 		return
 
