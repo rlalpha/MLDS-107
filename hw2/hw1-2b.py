@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Net(nn.Module):
@@ -35,10 +35,11 @@ def get_gradient(model):
             grad = (p.grad.cpu().data.numpy() ** 2).sum()
         grad_all += grad
     grad_norm = grad_all ** 0.5
-    print(grad_norm)
+    return grad_norm
 
 
 def train(model, train_loader, optimizer, epoch):
+    grad_norm = []
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.cuda(), target.cuda()
@@ -46,16 +47,17 @@ def train(model, train_loader, optimizer, epoch):
         output = model(data)
         loss = F.nll_loss(output, target)
         loss.backward()
-        get_gradient(model)
+        grad_norm.append(get_gradient(model))
         optimizer.step()
         if batch_idx % 1 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
+    return grad_norm
 
 
 def main():
-    epochs = 10
+    epochs = 20
     batch_size = 1000
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
@@ -66,9 +68,13 @@ def main():
         batch_size=batch_size, shuffle=True)
     model = Net().cuda()
     optimizer = optim.Adam(model.parameters())
+    grad_norm = []
     for epoch in range(1, epochs + 1):
-        train(model, train_loader, optimizer, epoch)
+        grad_norm.extend(train(model, train_loader, optimizer, epoch))
+    plt.plot(grad_norm, '-o')
+    plt.show()
 
 
 if __name__ == '__main__':
     main()
+
