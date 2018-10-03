@@ -40,6 +40,7 @@ def get_gradient(model):
 
 def train(model, train_loader, optimizer, epoch):
     grad_norm = []
+    los = []
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.cuda(), target.cuda()
@@ -48,16 +49,17 @@ def train(model, train_loader, optimizer, epoch):
         loss = F.nll_loss(output, target)
         loss.backward()
         grad_norm.append(get_gradient(model))
+        los.append(loss.item())
         optimizer.step()
         if batch_idx % 1 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
-    return grad_norm
+    return grad_norm, los
 
 
 def main():
-    epochs = 20
+    epochs = 10
     batch_size = 1000
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
@@ -69,9 +71,14 @@ def main():
     model = Net().cuda()
     optimizer = optim.Adam(model.parameters())
     grad_norm = []
+    loss = []
     for epoch in range(1, epochs + 1):
-        grad_norm.extend(train(model, train_loader, optimizer, epoch))
+        grad, los = train(model, train_loader, optimizer, epoch)
+        grad_norm.extend(grad)
+        loss.append(los)
     plt.plot(grad_norm, '-o')
+    plt.show()
+    plt.plot(los, '-o')
     plt.show()
 
 
