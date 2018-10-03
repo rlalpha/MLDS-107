@@ -92,12 +92,13 @@ def print_3D(weights, model, x, y, epochs):
     x, y = x_y.T
     loss = np.array(loss)
     ax.plot3D(x[:epochs], y[:epochs], loss[:epochs], 'gray')
+    ax.scatter3D(x[epochs-1], y[epochs-1], loss[epochs-1], 'red')
     ax.scatter3D(x[epochs:], y[epochs:], loss[epochs:], c=loss[epochs:], cmap='CMRmap')
     plt.show()
 
 
 epochs = 25
-check_point = 50
+check_point = 100
 
 
 def main():
