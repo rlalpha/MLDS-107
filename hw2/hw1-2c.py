@@ -51,8 +51,11 @@ class CNN(object):
 		self.loss = tf.reduce_mean(tf.losses.softmax_cross_entropy(self.y, logits = logits))
 
 		# Gradient
-		parms = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope = "parms")
-		gradients = tf.gradients(ys = self.loss, xs = parms)
+		self.parms = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope = "parms")
+		self.parms_placeholder = [tf.placeholder(tf.float32, shape = parm.shape) for parm in self.parms]
+		self.assign_op = [tf.assign(parm, parm_placeholder) for parm, parm_placeholder in zip(self.parms, self.parms_placeholder)]
+
+		gradients = tf.gradients(ys = self.loss, xs = self.parms)
 		squared_para = [tf.reduce_sum(tf.square(gradient)) for gradient in gradients]
 		self.squared_gradient = tf.reduce_sum(squared_para)
 
@@ -62,9 +65,6 @@ class CNN(object):
 
 		self.loss_train_op = self.loss_optimizer.minimize(self.loss)
 		self.gradient_train_op = self.gradient_optimizer.minimize(self.squared_gradient)
-		# self.flatten_parms = tf.concat([tf.reshape(parm, [-1]) for parm in parms], axis = 0)
-
-		self.hessian = tf.hessians(self.loss, parms)
 
 		return
 
@@ -89,19 +89,25 @@ class CNN(object):
 				squared_gradient = self.sess.run([self.squared_gradient], feed_dict = {self.X : X_batch, self.y : y_batch})
 				if j % 10 == 0:
 					print("loss", loss, "squared_gradient", squared_gradient, "time", time.time() - delta_time)
-		
 		if train_loss == False:
-			hessian = self.sess.run([self.hessian], feed_dict = {self.X : X_batch, self.y : y_batch})
-			print(hessian.shape)
-			print(hessian)
-			hessian = np.array(hessian)
-			np.save('hessian.npy', hessian)
+			cnt = 0
+			sample_size = 100
+			parms_w = self.sess.run([self.parms])[0]
+			loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
+			sample_epoc = 2000
+			for i in range(sample_epoc):
+				print(i)
+				shuffled_parms_w = [parm_w + np.random.standard_normal(parm_w.shape) for parm_w in parms_w]
+				sess.run([self.assign_op], feed_dict = {self.parms_placeholder[i] : shuffled_parms_w[i] for i in range(len(shuffled_parms_w))})
+				changed_loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
+				if changed_loss > loss:
+					cnt += 1
+			print ("ratio", cnt / sample_epoc)
 
-		return
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = generate_data()
 	sess = tf.InteractiveSession()
 	model = CNN(sess)
 	model.train(x_train, y_train, 1)
-	model.train(x_train, y_train, 1,  train_loss = False)
+	model.train(x_train, y_train, 2,  train_loss = False)
