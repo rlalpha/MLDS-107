@@ -67,12 +67,12 @@ class CNN(object):
 
 		return
 
-	def cal_min_ratio(self, sample_epoc = 200, sample_size = 1000):
+	def cal_min_ratio(self, X_train, sample_epoc = 200, sample_size = 1000):
 		cnt = 0
 		parms_w = self.sess.run([self.parms])[0]
 		loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
 		for i in range(sample_epoc):
-			print(i)
+			# print(i)
 			shuffled_parms_w = [parm_w + np.random.standard_normal(parm_w.shape) for parm_w in parms_w]
 			sess.run([self.assign_op], feed_dict = {self.parms_placeholder[i] : shuffled_parms_w[i] for i in range(len(shuffled_parms_w))})
 			changed_loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
@@ -82,6 +82,10 @@ class CNN(object):
 		return (cnt / sample_epoc)
 
 	def train(self, X_train, y_train, epoc, train_loss = True):
+    	
+		loss_list = []
+		minimal_ratio_list = []
+
 		if train_loss:
 			self.sess.run(tf.global_variables_initializer())
 
@@ -102,9 +106,13 @@ class CNN(object):
 				squared_gradient = self.sess.run([self.squared_gradient], feed_dict = {self.X : X_batch, self.y : y_batch})
 				if j % 10 == 0:
 					print("loss", loss, "squared_gradient", squared_gradient, "time", time.time() - delta_time)
-			if train_loss == False:
-				ratio = self.cal_min_ratio()
-				print("ratio", ratio)
+					if train_loss == False:
+						ratio = self.cal_min_ratio(X_train)
+						loss_list.append(loss)
+						minimal_ratio_list.append(ratio)
+						print("ratio: %i"%ratio)
+
+		print(zip(loss, minimal_ratio_list))
 
 
 if __name__ == '__main__':
