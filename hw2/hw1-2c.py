@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
+import matplotlib.pyplot as plt
 import time
 def generate_data():
 	(x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -73,7 +74,7 @@ class CNN(object):
 		loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
 		for i in range(sample_epoc):
 			# print(i)
-			shuffled_parms_w = [parm_w + np.random.standard_normal(parm_w.shape) for parm_w in parms_w]
+			shuffled_parms_w = [parm_w + 10*np.random.standard_normal(parm_w.shape) for parm_w in parms_w]
 			sess.run([self.assign_op], feed_dict = {self.parms_placeholder[i] : shuffled_parms_w[i] for i in range(len(shuffled_parms_w))})
 			changed_loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
 			if changed_loss > loss:
@@ -93,7 +94,7 @@ class CNN(object):
 		N = X_train.shape[0]
 		batch_num = N // batch_sz
 		for i in range(epoc):
-			print(i)
+			print('epochs %i'%i)
 
 			for j in range(batch_num):
 				delta_time = time.time()
@@ -105,19 +106,23 @@ class CNN(object):
 				loss = self.sess.run([self.loss], feed_dict = {self.X : X_batch, self.y : y_batch})
 				squared_gradient = self.sess.run([self.squared_gradient], feed_dict = {self.X : X_batch, self.y : y_batch})
 				if j % 10 == 0:
-					print("loss", loss, "squared_gradient", squared_gradient, "time", time.time() - delta_time)
-					if train_loss == False:
-						ratio = self.cal_min_ratio(X_train)
-						loss_list.append(loss)
-						minimal_ratio_list.append(ratio)
-						print("ratio: %i"%ratio)
-
-		return list(zip(loss, minimal_ratio_list))
+					# print("loss", loss, "squared_gradient", squared_gradient, "time", time.time() - delta_time)
+					ratio = self.cal_min_ratio(X_train)
+					loss_list.append(loss)
+					minimal_ratio_list.append(ratio)
+					print('ratio: ' + str(ratio) + ', and loss: ' + str(loss))
+			
+		return loss, minimal_ratio_list
 
 
 if __name__ == '__main__':
 	x_train, y_train, x_test, y_test = generate_data()
 	sess = tf.InteractiveSession()
 	model = CNN(sess)
-	model.train(x_train, y_train, 1)
-	print(model.train(x_train, y_train, 2,  train_loss = False))
+	loss, minimal_ratio_list = model.train(x_train, y_train, 10)
+	print(loss, minimal_ratio_list)
+	
+	plt.scatter(loss, minimal_ratio_list)
+	plt.legend()
+	plt.savefig('1c.png')
+	plt.gcf().clear()
