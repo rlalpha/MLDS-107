@@ -78,7 +78,7 @@ class CNN(object):
             changed_loss = self.sess.run([self.loss], feed_dict = {self.X : X_train[-sample_size:], self.y : y_train[-sample_size:]})
             if changed_loss > loss:
                 cnt += 1
-		sess.run([self.assign_op], feed_dict = {self.parms_placeholder[i] : parms_w[i] for i in range(len(parms_w))})
+	sess.run([self.assign_op], feed_dict = {self.parms_placeholder[i] : parms_w[i] for i in range(len(parms_w))})
         return (cnt / sample_epoc)
 
 	def train(self, X_train, y_train, epoc, train_loss = True):
