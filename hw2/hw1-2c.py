@@ -112,7 +112,7 @@ class CNN(object):
 						minimal_ratio_list.append(ratio)
 						print("ratio: %i"%ratio)
 
-		print(zip(loss, minimal_ratio_list))
+		return list(zip(loss, minimal_ratio_list))
 
 
 if __name__ == '__main__':
@@ -120,4 +120,4 @@ if __name__ == '__main__':
 	sess = tf.InteractiveSession()
 	model = CNN(sess)
 	model.train(x_train, y_train, 1)
-	model.train(x_train, y_train, 2,  train_loss = False)
+	print(model.train(x_train, y_train, 2,  train_loss = False))
