@@ -2,10 +2,11 @@ import numpy as np
 from keras.models import Model
 from keras.layers import Input, Dense
 from keras.callbacks import LambdaCallback
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import collections
 from mpl_toolkits.mplot3d import axes3d
+import optimizer
 
 
 def flatten(x):
@@ -14,11 +15,11 @@ def flatten(x):
     else:
         return [x]
       
-      
+
 def generate_data():
     x = np.linspace(0.00001, 1, 9999)
     y = np.sin(5*np.pi*x)/(5*np.pi*x)
-    index = list(range(0,9999))
+    index = list(range(0, 9999))
     np.random.seed(10332)
     np.random.shuffle(index)
     x_u = x[index]
@@ -53,8 +54,7 @@ def train(model, x_train, y_train, x_test, y_test, epochs):
     ) 
     history = model.fit(x_train, y_train, batch_size=100,
                         epochs=epochs, verbose=1,
-                        validation_data=(x_test, y_test),
-                        callbacks=[add_every_epochs, save_weights])
+                        validation_data=(x_test, y_test))               
     return history, weights
     #### weights[epoch[layer, ...], ...] ####
 
@@ -65,7 +65,7 @@ def add_noise(weights):
         for i in range(len(weight)):
             weight[i] = add_noise(weight[i])
     else:
-        weight = weight + np.random.normal(scale=np.abs(np.amax(weight)/20), size=weight.shape)
+        weight = weight + np.random.normal(scale=np.abs(np.amax(weight)/10), size=weight.shape)
     return weight
 
 
@@ -105,9 +105,9 @@ def main():
     x_train, y_train, x_test, y_test, _, _ = generate_data()
     model = model_generator()
     _, weights = train(model, x_train, y_train, x_test, y_test, epochs)
-    #### weights[epoch[layer, ...], ...] ####
+    # weights[epoch[layer, ...], ...] ####
     for epoch in range(len(weights)):
-        #### for every epoch, check #check_point of point ####
+        # for every epoch, check #check_point of point ####
         for i in range(check_point):
             weight_n = add_noise(weights[epoch])
             weights.append(weight_n)        
@@ -116,3 +116,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

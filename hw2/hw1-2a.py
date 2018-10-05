@@ -10,11 +10,13 @@ from keras.callbacks import LambdaCallback
 import numpy as np
 from sklearn.decomposition import PCA
 from matplotlib import pyplot as plt
+import pickle 
 
 
 layer_num = 3
-epochs = 10
+epochs = 20
 times = 8
+
 
 def generate_data():
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -71,21 +73,31 @@ def Pca(w, i):
     print('pca')
     pca = PCA(n_components=2)
     pca_data = []    
+    temp_all = []
+    temp = []
     for times in range(len(w)):
         layer = w[times]
         layer = reshape(layer)
-        if times == 0:
-            x = pca.fit_transform(layer[i])
-        else:
-            x = pca.transform(layer[i])
+        temp.extend(layer[i])
+        temp_all.append(layer[i])
+        
+    temp = temp[::3]    
+        
+    pca.fit(temp)  
+    for times in range(len(w)):
+        x = temp_all[times]
+        x = x[::3]
+        x = pca.transform(temp_all[times])
         pca_data.append(x)
-    return pca_data
+    return pca_data 
 
   
 def Pca_w(w):
     print('pca_w')
     pca = PCA(n_components=2)
     pca_data = []
+    temp_all = []
+    temp = []
     for times in range(len(w)):
         data = []
         layer = w[times]
@@ -94,11 +106,11 @@ def Pca_w(w):
             for j in range(len(layer)):  #layer_num
                 data[k].append(layer[j][k])
             data[k] = flatten(data[k])
-            
-        if times == 0:
-            x = pca.fit_transform(data)
-        else:
-            x = pca.transform(data)
+        temp.extend(data)    
+        temp_all.append(data)    
+    pca.fit(temp)  
+    for times in range(len(w)):
+        x = pca.transform(temp_all[times])
         pca_data.append(x)
     return pca_data 
     
@@ -113,7 +125,7 @@ def print_xy(coordinate, loss):
             plt.text(x[j], y[j], round(loss[i][j],3), fontdict={'color':color[i]})
     plt.show()
     
-    
+   
 def main():   
     x_train,y_train,x_test,y_test = generate_data()
     w = []
@@ -122,7 +134,7 @@ def main():
         print(i+1,'times')
         history, weights = train(x_train,y_train,x_test,y_test,epochs) #weights[ layer[ [epoch], [epoch]  ], layer [ [epoch], [epoch]  ]    ]
         w.append(weights)
-        his.append(history.history['val_loss'])
+        his.append(history.history['val_loss'])  
     coor = Pca(w,0)
     print('layer0')
     print_xy(coor, his)
@@ -133,4 +145,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-  
