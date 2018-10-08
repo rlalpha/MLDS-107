@@ -53,8 +53,13 @@ def train(model, x_train, y_train, x_test, y_test, epochs):
         logs: [weights[-1].append(layer.get_weights()) for layer in model.layers] 
     ) 
     history = model.fit(x_train, y_train, batch_size=100,
-                        epochs=epochs, verbose=1,
-                        validation_data=(x_test, y_test))               
+                        epochs=10, verbose=1,
+                        validation_data=(x_test, y_test))
+    model.compile(optimizer='SGD2', loss='mse')
+    history = model.fit(x_train, y_train, batch_size=100,
+                        epochs=10, verbose=1,
+                        validation_data=(x_test, y_test),
+                        callbacks=[add_every_epochs, save_weights])                    
     return history, weights
     #### weights[epoch[layer, ...], ...] ####
 
@@ -116,4 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
