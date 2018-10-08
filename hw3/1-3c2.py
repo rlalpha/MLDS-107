@@ -18,12 +18,11 @@ class CNN(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = F.relu(x)
+        x = F.selu(x)
         x = self.conv2(x)
-        x = F.relu(x)
+        x = F.selu(x)
         x = x.view(-1, 20*20*20)
         x = self.fc1(x)
-        x = F.relu(x)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
@@ -31,12 +30,12 @@ class CNN(nn.Module):
 def train(model, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
+        optimizer.zero_grad()
         data, target = data.cuda(), target.cuda()
         output = model(data)
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-        optimizer.zero_grad()
         if batch_idx % 1 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
