@@ -32,15 +32,15 @@ class ModelConfig():
         self.num_of_filter_in_layer_2 = config[3]
 
 def model_config_generation():
-    # filter_1_size = [(3, 3), (4, 4), (5, 5)]
-    # num_of_filter_in_layer_1 = [16, 32, 64]
-    # filter_2_size = [(3, 3), (4, 4), (5, 5)]
-    # num_of_filter_in_layer_2 = [16, 32, 64]
-
-    filter_1_size = [(3, 3)]
-    num_of_filter_in_layer_1 = [16]
+    filter_1_size = [(3, 3), (5, 5)]
+    num_of_filter_in_layer_1 = [16, 32, 64]
     filter_2_size = [(3, 3), (5, 5)]
-    num_of_filter_in_layer_2 = [16]
+    num_of_filter_in_layer_2 = [16, 32, 64]
+
+    # filter_1_size = [(3, 3)]
+    # num_of_filter_in_layer_1 = [16]
+    # filter_2_size = [(3, 3), (5, 5)]
+    # num_of_filter_in_layer_2 = [16]
 
     config_setting = [filter_1_size, num_of_filter_in_layer_1,
         filter_2_size, num_of_filter_in_layer_2]
