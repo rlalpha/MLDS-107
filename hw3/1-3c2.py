@@ -29,6 +29,7 @@ class CNN(nn.Module):
 
 def train(model, train_loader, optimizer, epoch):
     model.train()
+    loss_f = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
         data, target = data.cuda(), target.cuda()
@@ -40,33 +41,48 @@ def train(model, train_loader, optimizer, epoch):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
+        loss_f = loss.item()     
+    return loss_f
 
 
 def main():
     epochs = 20
     batch_size = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]
     sensitive = []
+    losses = []
     for i in range(len(batch_size)):
         model = CNN().cuda()
         optimizer = optim.Adam(model.parameters())
         train_loader = torch.utils.data.DataLoader(
             datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])),  batch_size=batch_size[i], shuffle=True)
         for epoch in range(1, epochs):
-            train(model, train_loader, optimizer, epoch)
-        grad_norm = get_gradient(model)
-        print('grad_norm', grad_norm)
-        sensitive.append(grad_norm)
-    plt.plot(batch_size, sensitive)
+            loss = train(model, train_loader, optimizer, epoch)
+        losses.append(loss)
+        print("loss", loss)
+        sensitive1 = get_sensitive(model)
+        print('sensitive', sensitive1)
+        sensitive.append(sensitive1)
+    batch_size_log = np.log10(batch_size)
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    plt.plot(batch_size_log, sensitive, '-', color='b', label='sensitive')
+    ax1.set_ylabel('sensitive')
+    ax1.set_xlabel('batch_size(log)')
+    ax2 = ax1.twinx()  # this is the important function
+    plt.plot(batch_size_log, losses, '-', color='r', label='loss')
+    ax2.set_ylabel('loss')
+    plt.legend()
     plt.show()
 
 
-def get_gradient(model):
+def get_sensitive(model):
     grad_all = 0
     for p in model.parameters():
         if p.grad is not None:
             grad = 0.0
             grad = (p.grad ** 2).sum()
         grad_all += grad
+    grad_all = grad_all ** 0.5
     return grad_all
 
 
