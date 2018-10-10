@@ -32,10 +32,10 @@ class ModelConfig():
         self.num_of_filter_in_layer_2 = config[3]
 
 def model_config_generation():
-    filter_1_size = [(3, 3), (5, 5)]
-    num_of_filter_in_layer_1 = [16, 32, 64]
-    filter_2_size = [(3, 3), (5, 5)]
-    num_of_filter_in_layer_2 = [16, 32, 64]
+    filter_1_size = [(3, 3), (4, 4), (5, 5)]
+    num_of_filter_in_layer_1 = [8, 16, 32, 64]
+    filter_2_size = [(3, 3), (4, 4), (5, 5)]
+    num_of_filter_in_layer_2 = [8, 16, 32, 64]
 
     # filter_1_size = [(3, 3)]
     # num_of_filter_in_layer_1 = [16]
@@ -101,7 +101,7 @@ def main():
     for config in config_set:
         model = model_generator(config)
         param_size, acc, loss, val_acc, val_loss = train_and_get_loss_acc_and_param_size(
-            model, x_train, y_train, x_test, y_test, epochs=250)
+            model, x_train, y_train, x_test, y_test, epochs=200)
         model_param_size.append(param_size)
         model_train_acc.append(acc)
         model_train_loss.append(loss)
