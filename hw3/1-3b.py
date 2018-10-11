@@ -23,45 +23,55 @@ def generate_data():
     return x_train, y_train, x_test, y_test
 
 
-class ModelConfig():
+# class ModelConfig():
     
-    def __init__(self, config):
-        self.filter_1_size = config[0]
-        self.num_of_filter_in_layer_1 = config[1]
-        self.filter_2_size = config[2]
-        self.num_of_filter_in_layer_2 = config[3]
+#     def __init__(self, config):
+#         self.filter_1_size = config[0]
+#         self.num_of_filter_in_layer_1 = config[1]
+#         self.filter_2_size = config[2]
+#         self.num_of_filter_in_layer_2 = config[3]
 
-def model_config_generation():
-    filter_1_size = [(3, 3), (4, 4), (5, 5)]
-    num_of_filter_in_layer_1 = [2, 4, 8, 16, 32]
-    filter_2_size = [(3, 3), (4, 4), (5, 5)]
-    num_of_filter_in_layer_2 = [2, 4, 8, 16, 32]
+# def model_config_generation():
+#     filter_1_size = [(3, 3), (4, 4), (5, 5)]
+#     num_of_filter_in_layer_1 = [2, 4, 8, 16, 32]
+#     filter_2_size = [(3, 3), (4, 4), (5, 5)]
+#     num_of_filter_in_layer_2 = [2, 4, 8, 16, 32]
 
-    # filter_1_size = [(3, 3)]
-    # num_of_filter_in_layer_1 = [16]
-    # filter_2_size = [(3, 3), (5, 5)]
-    # num_of_filter_in_layer_2 = [16]
+#     # filter_1_size = [(3, 3)]
+#     # num_of_filter_in_layer_1 = [16]
+#     # filter_2_size = [(3, 3), (5, 5)]
+#     # num_of_filter_in_layer_2 = [16]
 
-    config_setting = [filter_1_size, num_of_filter_in_layer_1,
-        filter_2_size, num_of_filter_in_layer_2]
+#     config_setting = [filter_1_size, num_of_filter_in_layer_1,
+#         filter_2_size, num_of_filter_in_layer_2]
     
-    config_set = list(itertools.product(*config_setting))
-    config_set = list(map(ModelConfig, config_set))
+#     config_set = list(itertools.product(*config_setting))
+#     config_set = list(map(ModelConfig, config_set))
 
-    return config_set
+#     return config_set
 
-def model_generator(model_config, activation='relu'):
-    print('model build')
-    input = Input(shape=(28,28,1,), name='input')
-    layer = Conv2D(model_config.num_of_filter_in_layer_1, model_config.filter_1_size, activation=activation, name='layer1')(input)
-    layer = MaxPooling2D(pool_size=(2, 2))(layer)
-    layer = Conv2D(model_config.num_of_filter_in_layer_2, model_config.filter_2_size, activation=activation, name='layer2')(input)
-    layer = MaxPooling2D(pool_size=(2, 2))(layer)
-    layer = Flatten()(layer)
-    end = Dense(10, activation='softmax', name='end')(layer)     
-    model = Model(input=input, output=end)
+def model_generator(hidden_num, activation='relu'):
+    print('model_' + str(hidden_num) + ' build')
+    model = Sequential()
+    model.add(InputLayer((28,28,1)))
+    model.add(Flatten())
+    model.add(Dense(hidden_num, activation = activation))
+    model.add(Dense(10, activation = 'softmax', name = 'end'))
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    
+    print(model.summary())
     return model
+    # print('model build')
+    # input = Input(shape=(28,28,1,), name='input')
+    # layer = Conv2D(model_config.num_of_filter_in_layer_1, model_config.filter_1_size, activation=activation, name='layer1')(input)
+    # layer = MaxPooling2D(pool_size=(2, 2))(layer)
+    # layer = Conv2D(model_config.num_of_filter_in_layer_2, model_config.filter_2_size, activation=activation, name='layer2')(input)
+    # layer = MaxPooling2D(pool_size=(2, 2))(layer)
+    # layer = Flatten()(layer)
+    # end = Dense(10, activation='softmax', name='end')(layer)     
+    # model = Model(input=input, output=end)
+    # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # return model
 
     
 def train_and_get_loss_acc_and_param_size(model, x_train, y_train, x_test, y_test, epochs=250, batch_size=64):
@@ -88,7 +98,7 @@ def plot_result(x, y1, y2, title, label1, label2, x_tile, y_title, fig_name):
     plt.gcf().clear()
 
 def main():
-    config_set = model_config_generation()
+    # config_set = model_config_generation()
 
     x_train, y_train, x_test, y_test = generate_data()
 
@@ -98,10 +108,10 @@ def main():
     model_test_acc = []
     model_test_loss = []
 
-    for config in config_set:
-        model = model_generator(config)
+    for i in range(1, 5):
+        model = model_generator(i)
         param_size, acc, loss, val_acc, val_loss = train_and_get_loss_acc_and_param_size(
-            model, x_train, y_train, x_test, y_test, epochs=20)
+            model, x_train, y_train, x_test, y_test, epochs=5)
         model_param_size.append(param_size)
         model_train_acc.append(acc)
         model_train_loss.append(loss)
