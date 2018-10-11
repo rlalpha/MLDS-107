@@ -24,7 +24,6 @@ def generate_data():
 
 
 # class ModelConfig():
-    
 #     def __init__(self, config):
 #         self.filter_1_size = config[0]
 #         self.num_of_filter_in_layer_1 = config[1]
@@ -81,10 +80,9 @@ def train_and_get_loss_acc_and_param_size(model, x_train, y_train, x_test, y_tes
                             verbose=1,
                             validation_data=(x_test, y_test))
 
-    return model.count_params(), res.history['acc'], res.history['loss'], res.history['val_acc'], res.history['val_loss']
+    return model.count_params(), res.history['acc'][-1], res.history['loss'][-1], res.history['val_acc'][-1], res.history['val_loss'][-1]
 
 def plot_result(x, y1, y2, title, label1, label2, x_tile, y_title, fig_name):
-    colors = (0,0,0)
     area = np.pi*3
     
     # Plot
@@ -108,15 +106,22 @@ def main():
     model_test_acc = []
     model_test_loss = []
 
-    for i in range(1, 5):
+    for i in range(1, 50):
         model = model_generator(i)
         param_size, acc, loss, val_acc, val_loss = train_and_get_loss_acc_and_param_size(
-            model, x_train, y_train, x_test, y_test, epochs=5)
+            model, x_train, y_train, x_test, y_test, epochs=20)
         model_param_size.append(param_size)
+        print(param_size)
         model_train_acc.append(acc)
+        print(acc)
         model_train_loss.append(loss)
+        print(loss)
         model_test_acc.append(val_acc)
+        print(val_acc)
         model_test_loss.append(val_loss)
+        print(val_loss)
+
+    
 
     plot_result(model_param_size, model_train_loss, model_test_loss,
         'MNIST Model Loss','train_loss', 'test_loss', 'number of parameters', 'loss', '3b_loss')
