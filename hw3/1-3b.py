@@ -1,11 +1,13 @@
 
 import numpy as np
+import gc
 
 from keras.utils import np_utils
 from keras.models import Sequential
 from keras.models import Model
 from keras.layers import Input, Dense, Dropout, Activation, Flatten, InputLayer
 from keras.layers import Conv2D, MaxPooling2D
+from keras import backend as K
 
 # get dataset
 from keras.datasets import mnist
@@ -107,19 +109,23 @@ def main():
     model_test_loss = []
 
     for i in range(1, 50):
-        model = model_generator(i)
-        param_size, acc, loss, val_acc, val_loss = train_and_get_loss_acc_and_param_size(
-            model, x_train, y_train, x_test, y_test, epochs=20)
-        model_param_size.append(param_size)
-        print(param_size)
-        model_train_acc.append(acc)
-        print(acc)
-        model_train_loss.append(loss)
-        print(loss)
-        model_test_acc.append(val_acc)
-        print(val_acc)
-        model_test_loss.append(val_loss)
-        print(val_loss)
+        for j in range(5):
+            model = model_generator(i)
+            param_size, acc, loss, val_acc, val_loss = train_and_get_loss_acc_and_param_size(
+                model, x_train, y_train, x_test, y_test, epochs=20)
+            model_param_size.append(param_size)
+            print(param_size)
+            model_train_acc.append(acc)
+            print(acc)
+            model_train_loss.append(loss)
+            print(loss)
+            model_test_acc.append(val_acc)
+            print(val_acc)
+            model_test_loss.append(val_loss)
+            print(val_loss)
+            K.clear_session()
+            del model
+            gc.collect()
 
     
 
