@@ -7,17 +7,6 @@ from keras import utils
 #pic
 import matplotlib.pyplot as plt
 ###### load data #########
-!pip install -U -q PyDrive ## you will have install for every colab session
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from google.colab import auth
-from oauth2client.client import GoogleCredentials
-from google.colab import files
-# 1. Authenticate and create the PyDrive client.
-auth.authenticate_user()
-gauth = GoogleAuth()
-gauth.credentials = GoogleCredentials.get_application_default()
-drive = GoogleDrive(gauth)
 
 
 def generate_data():
@@ -65,10 +54,7 @@ def main():
         model = model_generator()
         model = train(model, x_train, y_train, x_test, y_test, epochs, batch_size=batch_size[i])
         model.save(str(batch_size[i]) + '_model.h5')
-        #save to google drive
-        uploaded = drive.CreateFile({'title': str(batch_size[i]) + '_model.h5'})
-        uploaded.SetContentFile(str(batch_size[i]) + '_model.h5')
-        uploaded.Upload()
+       
  
 
 def add_noise(weights):
