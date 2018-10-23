@@ -8,7 +8,8 @@
 * python ./hw3/1-3c1/train.py 
 * python ./hw3/1-3c1/plot.py
 ### for 1-3c Q2 run 
-* python ./hw3/1-3c2.py
+* python ./hw3/1-3c2/train.py 
+* python ./hw3/1-3c2/plot.py
 ### for 1-3c Q3 run 
 * python ./hw3/1-3c3/train.py 
 * python ./hw3/1-3c3/plot.py
