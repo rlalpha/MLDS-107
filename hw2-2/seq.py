@@ -40,7 +40,7 @@ class Seq2SeqModel(BaseModel):
             # self.is_training = tf.placeholder(tf.bool)
 
             self.encoder_inputs = tf.placeholder(
-                tf.float32, shape=[None, None])
+                tf.int32, shape=[None, None])
             self.decoder_inputs = tf.placeholder(tf.int32, shape=[None, None])
             self.decoder_targets = tf.placeholder(tf.int32, shape=[None, None])
             self.sequence_length = tf.placeholder(tf.int32, shape=[None])
