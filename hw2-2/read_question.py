@@ -74,5 +74,5 @@ class DataLoader():
     
 # for testing purpose
 d = DataLoader(10)
-q, a = d.load_on_batch(0, 1)
-print(q.shape)
+question, mask = d.load_on_batch(0, 1)
+print(question.shape)
