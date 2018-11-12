@@ -31,6 +31,7 @@ class Seq2SeqModel(BaseModel):
         HIDDEN_LAYER_SIZE = self.config['HIDDEN_LAYER_SIZE']
         BOS = self.config['BOS']
         EOS = self.config['EOS']
+        USING_ATTENTION = self.config['USING_ATTENTION']
 
         # Define the model
         tf.reset_default_graph()
@@ -73,13 +74,16 @@ class Seq2SeqModel(BaseModel):
             decoder_inputs_embedded = tf.nn.embedding_lookup(
                 embeddings, self.decoder_inputs)
 
-            attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-                num_units=HIDDEN_LAYER_SIZE, memory=encoder_outputs)
-            attn_cell = tf.contrib.seq2seq.AttentionWrapper(
-                decoder_cell, attention_mechanism, attention_layer_size=HIDDEN_LAYER_SIZE)
-            out_cell = tf.contrib.rnn.OutputProjectionWrapper(
-                attn_cell, NUM_OF_WORDS
-            )
+            if USING_ATTENTION:
+                attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+                    num_units=HIDDEN_LAYER_SIZE, memory=encoder_outputs)
+                attn_cell = tf.contrib.seq2seq.AttentionWrapper(
+                    decoder_cell, attention_mechanism, attention_layer_size=HIDDEN_LAYER_SIZE)
+                out_cell = tf.contrib.rnn.OutputProjectionWrapper(
+                    attn_cell, NUM_OF_WORDS
+                )
+            else:
+                out_cell = tf.contrib.rnn.OutputProjectionWrapper(decoder_cell, NUM_OF_WORDS)
 
             training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_inputs_embedded,
                                                                                   self.sequence_length_fake, embeddings, self.sampling_prob)
