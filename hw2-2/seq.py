@@ -40,7 +40,7 @@ class Seq2SeqModel(BaseModel):
             # self.is_training = tf.placeholder(tf.bool)
 
             self.encoder_inputs = tf.placeholder(
-                tf.float32, shape=[None, None, ENCODER_INPUT_SIZE])
+                tf.float32, shape=[None, None])
             self.decoder_inputs = tf.placeholder(tf.int32, shape=[None, None])
             self.decoder_targets = tf.placeholder(tf.int32, shape=[None, None])
             self.sequence_length = tf.placeholder(tf.int32, shape=[None])
@@ -52,9 +52,14 @@ class Seq2SeqModel(BaseModel):
 
         # network architecture
         # Define Encoder
+        with tf.name_scope('embedding'):
+            # embedding for decoder
+            embeddings = tf.Variable(tf.random_uniform(
+                [NUM_OF_WORDS, EMBEDDING_SIZE], -1.0, 1.0), dtype=tf.float32)
+            
         with tf.name_scope('encoder'):
-            encoder_inputs_embedded = tf.layers.dense(
-                self.encoder_inputs, EMBEDDING_SIZE)
+            encoder_inputs_embedded = tf.nn.embedding_lookup(
+                embeddings, self.encoder_inputs)
             encoder_cell_fw = tf.contrib.rnn.MultiRNNCell([tf.nn.rnn_cell.DropoutWrapper(
                 tf.contrib.rnn.LSTMCell(HIDDEN_LAYER_SIZE), self.keep_prob) for _ in range(NUM_OF_LAYER)])
             encoder_cell_bw = tf.contrib.rnn.MultiRNNCell([tf.nn.rnn_cell.DropoutWrapper(
@@ -68,9 +73,6 @@ class Seq2SeqModel(BaseModel):
         with tf.name_scope('training_decoder'):
             decoder_cell = tf.contrib.rnn.MultiRNNCell([tf.nn.rnn_cell.DropoutWrapper(
                 tf.contrib.rnn.LSTMCell(HIDDEN_LAYER_SIZE), self.keep_prob) for _ in range(NUM_OF_LAYER)])
-            # embedding for decoder
-            embeddings = tf.Variable(tf.random_uniform(
-                [NUM_OF_WORDS, EMBEDDING_SIZE], -1.0, 1.0), dtype=tf.float32)
             decoder_inputs_embedded = tf.nn.embedding_lookup(
                 embeddings, self.decoder_inputs)
 
