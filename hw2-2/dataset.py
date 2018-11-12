@@ -11,8 +11,8 @@ import itertools
 import re
 
 
-def data_generator(x_train_filename='./dataset/sel_conversation/question.txt', 
-                   y_train_filename='./dataset/sel_conversation/answer.txt', 
+def data_generator(x_train_filename='./data/sel_conversation/question.txt', 
+                   y_train_filename='./data/sel_conversation/answer.txt', 
                    thershold_of_occurences=2, 
                    replacement_of_special_character = ''):
 
