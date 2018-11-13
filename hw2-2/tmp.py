@@ -61,10 +61,11 @@ for i in range(epoc):
         _, loss, prediction = model.train(x_batch, y_inputs_batch,
                                           y_targets_batch, sequence_length_batch,
                                           fake_max_sequence, sample_prob_input)
-    print([idx_word[idx] for idx in np.argmax(prediction[0], axis=1)])
-    print('truth:', [idx_word[y_targets_batch[0, k]]
-                     for k in range(max_length)])
-    print("epoch {0}: loss : {1}".format(i, loss))
+        if j % 20 == 0:
+            print([idx_word[idx] for idx in np.argmax(prediction[0], axis=1)])
+            print('truth:', [idx_word[y_targets_batch[0, k]]
+                        for k in range(max_length)])
+            print("epoch {0}: loss : {1}".format(i, loss))
 
 
 #train()
