@@ -67,5 +67,7 @@ for i in range(epoc):
                         for k in range(max_length)])
             print("epoch {0}: loss : {1}".format(i, loss))
 
+model.saver.save(model.sess, './checkpt/')
+
 
 #train()
