@@ -49,7 +49,7 @@ model = Seq2SeqModel(config)
 import math
 model.sess.run(tf.global_variables_initializer())
 
-epoc = 90
+epoc = 5
 fake_max_sequence = np.array([config['MAX_LENGTH']] * config['BATCH_SIZE'])
 for i in range(epoc):
     sample_prob_input = min(float(i) / epoc + 0.2, 1.0)
