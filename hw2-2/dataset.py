@@ -9,7 +9,13 @@ Created on Mon Nov 12 18:14:21 2018
 import numpy as np
 import itertools
 import re
+from gensim.models import KeyedVectors
 
+def load_word2vec_dic(path = './wiki.zh.vec'):
+    print('loading word2vec dictionary.....')
+    word2vec = KeyedVectors.load_word2vec_format(path)
+    print('Done loading.....')
+    return word2vec
 
 def data_generator(x_train_filename='./data/sel_conversation/question.txt',
                    y_train_filename='./data/sel_conversation/answer.txt',
@@ -85,8 +91,25 @@ def generate_batch(x, y_inputs, y_targets, word_idx, sequence_length, batch_size
     sequence_length_batch = sequence_length[idx]
     return x_batch, y_inputs_batch, y_targets_batch, sequence_length_batch
 
+def generate_embedding_matrix(word_to_vec, idx_to_word, num_of_words, vec_dim = 300):
+    print("creation of embedding.....")
+    embedding_matrix = np.zeros((num_of_words, vec_dim))
+    embedding_matrix[0] = np.ones(vec_dim)
+    embedding_matrix[1] = np.ones(vec_dim) * 2
+    embedding_matrix[3] = np.ones(vec_dim) * 3
+
+    for i in range(num_of_words):
+        if idx_to_word[i] in word_to_vec:
+            embedding_matrix[i] = word_to_vec[idx_to_word[i]]
+    
+    print("done creations.....")
+    return embedding_matrix
 
 if __name__ == '__main__':
     questions, y_inputs, y_targets, word_to_idx, idx_to_word, next_word_id, max_length, sequence_length = data_generator()
+    word_to_vec = load_word2vec_dic()
 
-    x_batch, y_inputs_batch, y_targets_batch, sequence_length_batch = generate_batch(questions, y_inputs, y_targets, word_to_idx, sequence_length, batch_size=128)
+    embedding_matrix = generate_embedding_matrix(word_to_vec, idx_to_word, next_word_id)
+    summed_matrix = np.sum(embedding_matrix, axis = 1)
+    print(np.count_nonzero(summed_matrix), next_word_id)
+    # x_batch, y_inputs_batch, y_targets_batch, sequence_length_batch = generate_batch(questions, y_inputs, y_targets, word_to_idx, sequence_length, batch_size=128)
