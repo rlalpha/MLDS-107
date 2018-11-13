@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from dataset import generate_batch, data_generator
+from dataset import generate_batch, data_generator, load_word2vec_dic, generate_embedding_matrix
 
 from seq import Seq2SeqModel
 
@@ -21,6 +21,9 @@ def generate_model(x_train, y_train):
 x, y_inputs, y_targets, word_to_idx, \
     idx_word, num_of_words, max_length, sequence_lengths \
     = get_train_data()
+word_to_vec = load_word2vec_dic()
+embedding_matrix = generate_embedding_matrix(word_to_vec, idx_word, num_of_words)
+
 config = {
     'ENCODER_INPUT_SIZE': 4096,
     'HIDDEN_LAYER_SIZE': 1024,
@@ -36,7 +39,8 @@ config = {
 
     'USING_ATTENTION': True,
 
-    'max_to_keep': False
+    'max_to_keep': False,
+    'embedding_matrix' : embedding_matrix
 }
 
 model = Seq2SeqModel(config)

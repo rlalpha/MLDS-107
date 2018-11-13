@@ -32,6 +32,7 @@ class Seq2SeqModel(BaseModel):
         BOS = self.config['BOS']
         EOS = self.config['EOS']
         USING_ATTENTION = self.config['USING_ATTENTION']
+        embedding_matrix = self.config['embedding_matrix']
 
         # Define the model
         tf.reset_default_graph()
@@ -53,9 +54,9 @@ class Seq2SeqModel(BaseModel):
         # network architecture
         # Define Encoder
         with tf.name_scope('embedding'):
-            # embedding for decoder
-            embeddings = tf.Variable(tf.random_uniform(
-                [NUM_OF_WORDS, EMBEDDING_SIZE], -1.0, 1.0), dtype=tf.float32)
+            # embedding for encoder and decoder
+            saved_embeddings = tf.constant(embedding_matrix, dtype = tf.float32)
+            embeddings = tf.Variable(saved_embeddings, trainable = False, dtype = tf.float32)
             
         with tf.name_scope('encoder'):
             encoder_inputs_embedded = tf.nn.embedding_lookup(
