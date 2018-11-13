@@ -26,7 +26,7 @@ embedding_matrix = generate_embedding_matrix(word_to_vec, idx_word, num_of_words
 
 config = {
     'ENCODER_INPUT_SIZE': 4096,
-    'HIDDEN_LAYER_SIZE': 1024,
+    'HIDDEN_LAYER_SIZE': 256,
     'EMBEDDING_SIZE': 1024,
     'NUM_OF_LAYER': 1,
     'BOS': 0,
