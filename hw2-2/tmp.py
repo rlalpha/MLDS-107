@@ -47,6 +47,7 @@ model = Seq2SeqModel(config)
 
 # training start
 import math
+saver = tf.train.Saver()
 model.sess.run(tf.global_variables_initializer())
 
 epoc = 5
@@ -67,7 +68,7 @@ for i in range(epoc):
                         for k in range(max_length)])
             print("epoch {0}: loss : {1}".format(i, loss))
 
-model.saver.save(model.sess, './checkpt/')
+saver.save(model.sess, './checkpt/')
 
 
 #train()
