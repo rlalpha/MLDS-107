@@ -25,8 +25,8 @@ def data_generator(x_train_filename='./data/sel_conversation/question.txt',
     # Load data
     questions_file = open(x_train_filename, 'r')
     answers_file = open(y_train_filename, 'r')
-    questions = [line.split(' ') for line in questions_file]
-    answers = [line.split(' ') for line in answers_file]
+    questions = [line[:-1].split(' ') for line in questions_file]
+    answers = [line[:-1].split(' ') for line in answers_file]
 
     print('start encoding')
     # init dictonary
