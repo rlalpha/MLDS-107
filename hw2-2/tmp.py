@@ -26,7 +26,7 @@ embedding_matrix = generate_embedding_matrix(word_to_vec, idx_word, num_of_words
 
 config = {
     'ENCODER_INPUT_SIZE': 4096,
-    'HIDDEN_LAYER_SIZE': 256,
+    'HIDDEN_LAYER_SIZE': 128,
     'EMBEDDING_SIZE': 1024,
     'NUM_OF_LAYER': 1,
     'BOS': 0,
@@ -68,7 +68,7 @@ for i in range(epoc):
                         for k in range(max_length)])
             print("epoch {0}: loss : {1}".format(i, loss))
 
-saver.save(model.sess, './checkpt/model_2.ckpt')
+saver.save(model.sess, './checkpt/model_128.ckpt')
 
 
 #train()
