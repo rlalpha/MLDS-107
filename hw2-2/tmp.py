@@ -67,4 +67,4 @@ for i in range(epoc):
                         for k in range(max_length)])
             print("epoch {0}: loss : {1}".format(i, loss))
 
-saver.save(model.sess, './checkpt/model_128.ckpt')
+saver.save(model.sess, './checkpt/model_1024.ckpt')
