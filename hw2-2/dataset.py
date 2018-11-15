@@ -64,7 +64,7 @@ def data_generator(x_train_filename='./data/sel_conversation/question.txt',
     sequence_length = np.array([len(answer) + 1 for answer in answers])
     
     questions = np.array([y + [word_to_idx['PAD']]
-                         * (max_length - len(y)) for y in answers])
+                         * (max_length - len(y)) for y in questions])
 
     y_inputs = np.array([[word_to_idx['BOS']] + y + [word_to_idx['PAD']]
                          * (max_length - len(y) - 1) for y in answers])
