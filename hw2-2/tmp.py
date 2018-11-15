@@ -17,7 +17,7 @@ def generate_model(x_train, y_train):
     pass
 
 
-#def train():
+
 x, y_inputs, y_targets, word_to_idx, \
     idx_word, num_of_words, max_length, sequence_lengths \
     = get_train_data()
@@ -26,9 +26,9 @@ embedding_matrix = generate_embedding_matrix(word_to_vec, idx_word, num_of_words
 
 config = {
     'ENCODER_INPUT_SIZE': 4096,
-    'HIDDEN_LAYER_SIZE': 128,
+    'HIDDEN_LAYER_SIZE': 1024,
     'EMBEDDING_SIZE': 1024,
-    'NUM_OF_LAYER': 1,
+    'NUM_OF_LAYER': 2,
     'BOS': 0,
     'EOS': 1,
     'BATCH_SIZE': 100,
@@ -58,7 +58,6 @@ for i in range(epoc):
         x_batch, y_inputs_batch, y_targets_batch, sequence_length_batch = \
             generate_batch(x, y_inputs, y_targets,
                            word_to_idx, sequence_lengths, batch_size=config['BATCH_SIZE'])
-#         print(y_inputs_batch.shape, y_targets_batch.shape, max(sequence_length_batch))
         _, loss, prediction = model.train(x_batch, y_inputs_batch,
                                           y_targets_batch, sequence_length_batch,
                                           fake_max_sequence, sample_prob_input)
@@ -69,6 +68,3 @@ for i in range(epoc):
             print("epoch {0}: loss : {1}".format(i, loss))
 
 saver.save(model.sess, './checkpt/model_128.ckpt')
-
-
-#train()
