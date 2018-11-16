@@ -20,6 +20,11 @@ class Seq2SeqModel(BaseModel):
                                         self.decoder_targets: y_targets_batch, self.sequence_length: sequence_length_batch,
                                         self.sequence_length_fake: fake_max_sequence, self.sampling_prob: sample_prob_input,
                                         self.batch_size: self.config['BATCH_SIZE'], self.keep_prob: self.config['KEEP_PROB']})
+    def predict(self, X_test, sequence_lengths, fake_max_sequence):
+        prediction = self.sess.run(self.pred_output, feed_dict = {self.encoder_inputs : X_test, self.sequence_length : sequence_lengths,
+                                                self.sequence_length_fake : fake_max_sequence, self.sampling_prob : 1.0,
+                                                self.batch_size : len(X_test), self.keep_prob : 1.0} )
+        return prediction
 
     def build_model(self):
 

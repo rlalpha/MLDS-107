@@ -65,7 +65,6 @@ def data_generator(x_train_filename='./data/sel_conversation/question.txt',
     
     questions = np.array([y + [word_to_idx['PAD']]
                          * (max_length - len(y)) for y in questions])
-
     y_inputs = np.array([[word_to_idx['BOS']] + y + [word_to_idx['PAD']]
                          * (max_length - len(y) - 1) for y in answers])
     y_targets = np.array([y + [word_to_idx['EOS']] + [word_to_idx['PAD']]
@@ -105,11 +104,28 @@ def generate_embedding_matrix(word_to_vec, idx_to_word, num_of_words, vec_dim = 
     print("done creations.....")
     return embedding_matrix
 
+def generate_testing_data(word_to_idx, path = './test_input.txt'):
+    
+    # Load data
+    questions_file = open(path, 'r')
+    questions = [line[:-1].split(' ') for line in questions_file]
+
+    questions = [[word_to_idx.get(word, 2) for word in question]
+                for question in questions]
+    questions = np.array(questions)
+    questions = np.array([y + [word_to_idx['PAD']]
+                         * (max_length - len(y)) for y in questions])
+    
+    return questions
+
+
+
 if __name__ == '__main__':
     questions, y_inputs, y_targets, word_to_idx, idx_to_word, next_word_id, max_length, sequence_length = data_generator()
-    word_to_vec = load_word2vec_dic()
+    # word_to_vec = load_word2vec_dic()
 
-    embedding_matrix = generate_embedding_matrix(word_to_vec, idx_to_word, next_word_id)
-    summed_matrix = np.sum(embedding_matrix, axis = 1)
-    print(np.count_nonzero(summed_matrix), next_word_id)
+    print(generate_testing_data(word_to_idx).shape)
+    # embedding_matrix = generate_embedding_matrix(word_to_vec, idx_to_word, next_word_id)
+    # summed_matrix = np.sum(embedding_matrix, axis = 1)
+    # print(np.count_nonzero(summed_matrix), next_word_id)
     # x_batch, y_inputs_batch, y_targets_batch, sequence_length_batch = generate_batch(questions, y_inputs, y_targets, word_to_idx, sequence_length, batch_size=128)
