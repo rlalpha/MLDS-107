@@ -180,13 +180,12 @@ if __name__ == "__main__":
 
             G_loss = model.train_G()
 
-        print ('D_loss:', D_loss, 'G_loss', G_loss)
-
-        if i % 1 == 0:
-            generated = model.generate_testing_img()
-            fig = plot(generated)
-            fig.savefig('./result/'+ str(i) + '.png')   # save the figure to file
-            plt.close(fig)    # close the figure
+            if j % 100 == 0:
+                print ('D_loss:', D_loss, 'G_loss', G_loss)
+                generated = model.generate_testing_img()
+                fig = plot(generated)
+                fig.savefig('./result/'+ str(i) + '_' + str(j) + '.png')   # save the figure to file
+                plt.close(fig)    # close the figure
 
         
 
