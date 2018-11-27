@@ -24,7 +24,7 @@ class WGAN(object):
         self.generated_img = self.generator(self.z)
 
         # discriminator for real image
-        iterator = load_animation_face_iterator(file_list, epochs = epochs)
+        iterator = load_animation_face_iterator(file_list, epochs = epochs + 20)
         self.real_img = iterator.get_next()
         self.real_img = tf.reshape(self.real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])
@@ -110,7 +110,6 @@ class WGAN(object):
             
             Z = conv2d_transpose(Z, filters = 3, kernel_size = (4, 4), strides = (1, 1),
             activation = tf.nn.sigmoid, padding = "same")
-            Z = batch_normalization(Z)
             print(Z)
 
             return Z
@@ -160,21 +159,24 @@ if __name__ == "__main__":
     model = WGAN(sess, epochs = EPOCHS)
     
     for i in range(EPOCHS):
-        generated = model.generate_testing_img()
-        fig = plot(generated)
-        plt.show(fig)
-
-        real = model.generate_real_img()
-        fig = plot(real)
-        plt.show(fig)
 
 
         for j in range(model.batch_num):
 
-            D_loss = model.train_D()
+            for k in range(5):
+                D_loss = model.train_D()
 
             G_loss = model.train_G()
 
         print ('D_loss:', D_loss, 'G_loss', G_loss)
+
+        if i % 200 == 0:
+            generated = model.generate_testing_img()
+            fig = plot(generated)
+            plt.show(fig)
+
+            real = model.generate_real_img()
+            fig = plot(real)
+            plt.show(fig)
         
 
