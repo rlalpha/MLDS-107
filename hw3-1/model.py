@@ -10,7 +10,7 @@ from tensorflow.layers import conv2d, max_pooling2d, batch_normalization, dense,
 class WGAN(object):
     
     # def init
-    def __init__(self, sess, z_d = 1000, batch_size = 32, epochs = 20, log_path = "./log"):
+    def __init__(self, sess, z_d = 100, batch_size = 32, epochs = 20, log_path = "./log"):
         self.sess = sess
         self.z_d = z_d
         self.output_dimension = (64, 64, 3)
@@ -57,24 +57,30 @@ class WGAN(object):
         sess.run(tf.global_variables_initializer())
 
 
-    def discriminator(self, img, scope = 'discriminator', reuse = False):
+    def discriminator(self, img, scope = 'discriminator', ndf = 128, reuse = False):
 
         with tf.variable_scope(scope, reuse = reuse):
 
-            # layer 1 None, 64, 64, 3 --> None, 32, 32, 50
-            Z = conv2d(img, filters = 50, kernel_size = (4, 4), strides = (2, 2)
+            # layer 1 None, 64, 64, 3 --> None, 32, 32, ndf
+            Z = conv2d(img, filters = ndf, kernel_size = (4, 4), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same")
             Z = batch_normalization(Z)
             print(Z)
 
-            # layer 2 None, 32 ,32, 50 --> None, 16, 16, 25
-            Z = conv2d(Z, filters = 25, kernel_size = (4, 4), strides = (2, 2)
+            # layer 2 None, 32 ,32, ndf --> None, 16, 16, ndf * 2
+            Z = conv2d(Z, filters = ndf * 2, kernel_size = (4, 4), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same")
             Z = batch_normalization(Z)
             print(Z)
 
-            # layer 3 None, 16 ,16, 25 --> None, 16, 16, 12
-            Z = conv2d(Z, filters = 12, kernel_size = (4, 4), strides = (1, 1)
+            # layer 3 None, 16 ,16, ndf * 2 --> None, 8, 8, ndf * 4
+            Z = conv2d(Z, filters = ndf * 4, kernel_size = (4, 4), strides = (2, 2)
+            , activation = tf.nn.leaky_relu, padding = "same")
+            Z = batch_normalization(Z)
+            print(Z)
+
+            # layer 4 None, 8 ,8, ndf * 4 --> None, 4, 4, ndf * 8
+            Z = conv2d(Z, filters = ndf * 8, kernel_size = (4, 4), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same")
             Z = batch_normalization(Z)
             print(Z)
@@ -88,27 +94,33 @@ class WGAN(object):
             
             return Z
         
-    def generator(self, z, scope = 'generator'):
+    def generator(self, z, scope = 'generator', ngf = 128):
 
         with tf.variable_scope(scope):
 
-            input_img = dense(z, 3072)
-            input_img = tf.reshape(input_img, shape = [-1, 16, 16, 12])
+            input_img = dense(z, 4 * 4 * 8 * ngf)
+            input_img = tf.reshape(input_img, shape = [-1, 4, 4, 8 * ngf])
 
-            # layer 1 None, 16, 16, 12 --> None, 32, 32, 25
-            Z = conv2d_transpose(input_img, filters = 25, kernel_size = (4, 4), strides = (2, 2),
+            # layer 1 None, 4, 4, 8 * ngf --> None, 8, 8, 4 * ngf
+            Z = conv2d_transpose(input_img, filters = 4 * ngf, kernel_size = (4, 4), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same")
             Z = batch_normalization(Z)
             print(Z)
 
-            # layer 2 None, 32, 32, 25 --> None, 64, 64, 50
-            Z = conv2d_transpose(Z, filters = 50, kernel_size = (4, 4), strides = (2, 2),
+            # layer 2 None, 8, 8, 4 * ngf --> None, 16, 16, 2 * ngf
+            Z = conv2d_transpose(Z, filters = 2 * ngf, kernel_size = (4, 4), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same")
             Z = batch_normalization(Z)
             print(Z)
 
-            
-            Z = conv2d_transpose(Z, filters = 3, kernel_size = (4, 4), strides = (1, 1),
+            # layer 3 None, 16, 16, 2 * ngf --> None, 32, 32, ngf
+            Z = conv2d_transpose(Z, filters = ngf, kernel_size = (4, 4), strides = (2, 2),
+            activation = tf.nn.leaky_relu, padding = "same")
+            Z = batch_normalization(Z)
+            print(Z)
+
+            # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
+            Z = conv2d_transpose(Z, filters = 3, kernel_size = (4, 4), strides = (2, 2),
             activation = tf.nn.sigmoid, padding = "same")
             print(Z)
 
