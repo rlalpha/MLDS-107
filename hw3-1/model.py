@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
         print ('D_loss:', D_loss, 'G_loss', G_loss)
 
-        if i % 10 == 0:
+        if i % 1 == 0:
             generated = model.generate_testing_img()
             fig = plot(generated)
             fig.savefig('./result/'+ str(i) + '.png')   # save the figure to file
