@@ -57,29 +57,29 @@ class WGAN(object):
         sess.run(tf.global_variables_initializer())
 
 
-    def discriminator(self, img, scope = 'discriminator', ndf = 64, reuse = False):
+    def discriminator(self, img, scope = 'discriminator', ndf = 128, reuse = False):
 
         with tf.variable_scope(scope, reuse = reuse):
 
             # layer 1 None, 64, 64, 3 --> None, 32, 32, ndf
-            Z = conv2d(img, filters = ndf, kernel_size = (4, 4), strides = (2, 2)
+            Z = conv2d(img, filters = ndf, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
             # layer 2 None, 32 ,32, ndf --> None, 16, 16, ndf * 2
-            Z = conv2d(Z, filters = ndf * 2, kernel_size = (4, 4), strides = (2, 2)
+            Z = conv2d(Z, filters = ndf * 2, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 3 None, 16 ,16, ndf * 2 --> None, 8, 8, ndf * 4
-            Z = conv2d(Z, filters = ndf * 4, kernel_size = (4, 4), strides = (2, 2)
+            Z = conv2d(Z, filters = ndf * 4, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 4 None, 8 ,8, ndf * 4 --> None, 4, 4, ndf * 8
-            Z = conv2d(Z, filters = ndf * 8, kernel_size = (4, 4), strides = (2, 2)
+            Z = conv2d(Z, filters = ndf * 8, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
@@ -91,7 +91,7 @@ class WGAN(object):
             
             return Z
         
-    def generator(self, z, scope = 'generator', ngf = 64):
+    def generator(self, z, scope = 'generator', ngf = 128):
 
         with tf.variable_scope(scope):
 
@@ -100,25 +100,25 @@ class WGAN(object):
             input_img = tf.reshape(input_img, shape = [-1, 4, 4, 8 * ngf])
 
             # layer 1 None, 4, 4, 8 * ngf --> None, 8, 8, 4 * ngf
-            Z = conv2d_transpose(input_img, filters = 4 * ngf, kernel_size = (4, 4), strides = (2, 2),
+            Z = conv2d_transpose(input_img, filters = 4 * ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 2 None, 8, 8, 4 * ngf --> None, 16, 16, 2 * ngf
-            Z = conv2d_transpose(Z, filters = 2 * ngf, kernel_size = (4, 4), strides = (2, 2),
+            Z = conv2d_transpose(Z, filters = 2 * ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 3 None, 16, 16, 2 * ngf --> None, 32, 32, ngf
-            Z = conv2d_transpose(Z, filters = ngf, kernel_size = (4, 4), strides = (2, 2),
+            Z = conv2d_transpose(Z, filters = ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
-            Z = conv2d_transpose(Z, filters = 3, kernel_size = (4, 4), strides = (2, 2),
+            Z = conv2d_transpose(Z, filters = 3, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.sigmoid, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
