@@ -41,8 +41,8 @@ class WGAN(object):
         G_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='generator')
 
         # train_op
-        self.D_train_op = tf.train.RMSPropOptimizer(- 1e-4).minimize(self.D_loss, var_list = D_vars)
-        self.G_train_op = tf.train.RMSPropOptimizer(- 1e-4).minimize(self.G_loss, var_list = G_vars)
+        self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
+        self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
 
         # clip operation
         self.clip_op = [ p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in D_vars]
@@ -57,71 +57,69 @@ class WGAN(object):
         sess.run(tf.global_variables_initializer())
 
 
-    def discriminator(self, img, scope = 'discriminator', ndf = 128, reuse = False):
+    def discriminator(self, img, scope = 'discriminator', ndf = 64, reuse = False):
 
         with tf.variable_scope(scope, reuse = reuse):
 
             # layer 1 None, 64, 64, 3 --> None, 32, 32, ndf
             Z = conv2d(img, filters = ndf, kernel_size = (4, 4), strides = (2, 2)
-            , activation = tf.nn.leaky_relu, padding = "same")
-            Z = batch_normalization(Z)
+            , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
             # layer 2 None, 32 ,32, ndf --> None, 16, 16, ndf * 2
             Z = conv2d(Z, filters = ndf * 2, kernel_size = (4, 4), strides = (2, 2)
-            , activation = tf.nn.leaky_relu, padding = "same")
+            , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 3 None, 16 ,16, ndf * 2 --> None, 8, 8, ndf * 4
             Z = conv2d(Z, filters = ndf * 4, kernel_size = (4, 4), strides = (2, 2)
-            , activation = tf.nn.leaky_relu, padding = "same")
+            , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 4 None, 8 ,8, ndf * 4 --> None, 4, 4, ndf * 8
             Z = conv2d(Z, filters = ndf * 8, kernel_size = (4, 4), strides = (2, 2)
-            , activation = tf.nn.leaky_relu, padding = "same")
+            , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # Dense Layer
             Z = flatten(Z)
-            Z = dense(Z, 512)
-            Z = dense(Z, 128)
             Z = dense(Z, 1)
             print(Z)
             
             return Z
         
-    def generator(self, z, scope = 'generator', ngf = 128):
+    def generator(self, z, scope = 'generator', ngf = 64):
 
         with tf.variable_scope(scope):
 
-            input_img = dense(z, 4 * 4 * 8 * ngf)
+            input_img = dense(z, 4 * 4 * 8 * ngf, activation = tf.nn.leaky_relu)
+            input_img = batch_normalization(input_img)
             input_img = tf.reshape(input_img, shape = [-1, 4, 4, 8 * ngf])
 
             # layer 1 None, 4, 4, 8 * ngf --> None, 8, 8, 4 * ngf
             Z = conv2d_transpose(input_img, filters = 4 * ngf, kernel_size = (4, 4), strides = (2, 2),
-            activation = tf.nn.leaky_relu, padding = "same")
+            activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 2 None, 8, 8, 4 * ngf --> None, 16, 16, 2 * ngf
             Z = conv2d_transpose(Z, filters = 2 * ngf, kernel_size = (4, 4), strides = (2, 2),
-            activation = tf.nn.leaky_relu, padding = "same")
+            activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 3 None, 16, 16, 2 * ngf --> None, 32, 32, ngf
             Z = conv2d_transpose(Z, filters = ngf, kernel_size = (4, 4), strides = (2, 2),
-            activation = tf.nn.leaky_relu, padding = "same")
+            activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             Z = batch_normalization(Z)
             print(Z)
 
             # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
             Z = conv2d_transpose(Z, filters = 3, kernel_size = (4, 4), strides = (2, 2),
-            activation = tf.nn.sigmoid, padding = "same")
+            activation = tf.nn.sigmoid, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
             return Z
@@ -175,13 +173,13 @@ if __name__ == "__main__":
 
         for j in range(model.batch_num):
 
-            for k in range(25):
+            for k in range(5):
                 D_loss = model.train_D()
 
             G_loss = model.train_G()
 
-            if j % 100 == 0:
-                print ('D_loss:', D_loss, 'G_loss', G_loss)
+            if j % 50 == 0:
+                print (i, j, 'D_loss:', D_loss, 'G_loss', G_loss)
                 generated = model.generate_testing_img()
                 fig = plot(generated)
                 fig.savefig('./result/'+ str(i) + '_' + str(j) + '.png')   # save the figure to file
