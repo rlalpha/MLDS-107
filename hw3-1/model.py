@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
         for j in range(model.batch_num):
 
-            for k in range(5):
+            for k in range(25):
                 D_loss = model.train_D()
 
             G_loss = model.train_G()
