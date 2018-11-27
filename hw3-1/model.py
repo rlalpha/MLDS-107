@@ -34,15 +34,15 @@ class WGAN(object):
         self.score_fake = self.discriminator(self.generated_img, reuse = True)
 
         self.D_loss = tf.reduce_mean(self.score_real) - tf.reduce_mean(self.score_fake)
-        self.G_loss = - tf.reduce_mean(self.score_fake)
+        self.G_loss = tf.reduce_mean(self.score_fake)
 
         # collection of variable
         D_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='discriminator')
         G_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='generator')
 
         # train_op
-        self.D_train_op = tf.train.RMSPropOptimizer(1e-4).minimize(-self.D_loss, var_list = D_vars)
-        self.G_train_op = tf.train.RMSPropOptimizer(1e-4).minimize(self.G_loss, var_list = G_vars)
+        self.D_train_op = tf.train.RMSPropOptimizer(- 1e-4).minimize(self.D_loss, var_list = D_vars)
+        self.G_train_op = tf.train.RMSPropOptimizer(- 1e-4).minimize(self.G_loss, var_list = G_vars)
 
         # clip operation
         self.clip_op = [ p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in D_vars]
@@ -155,7 +155,7 @@ def plot(samples):
 if __name__ == "__main__":
 
     sess = tf.Session()
-    EPOCHS = 10
+    EPOCHS = 20000
     model = WGAN(sess, epochs = EPOCHS)
     
     for i in range(EPOCHS):
@@ -170,13 +170,11 @@ if __name__ == "__main__":
 
         print ('D_loss:', D_loss, 'G_loss', G_loss)
 
-        if i % 200 == 0:
+        if i % 10 == 0:
             generated = model.generate_testing_img()
             fig = plot(generated)
-            plt.show(fig)
+            fig.savefig('./result/'+ str(i) + '.png')   # save the figure to file
+            plt.close(fig)    # close the figure
 
-            real = model.generate_real_img()
-            fig = plot(real)
-            plt.show(fig)
         
 
