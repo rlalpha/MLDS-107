@@ -33,16 +33,16 @@ class WGAN(object):
         self.score_real = self.discriminator(self.real_img)
         self.score_fake = self.discriminator(self.generated_img, reuse = True)
 
-        self.D_loss = tf.reduce_mean(self.score_real) - tf.reduce_mean(self.score_fake)
-        self.G_loss = tf.reduce_mean(self.score_fake)
+        self.D_loss = - tf.reduce_mean(self.score_real) + tf.reduce_mean(self.score_fake)
+        self.G_loss = - tf.reduce_mean(self.score_fake)
 
         # collection of variable
         D_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='discriminator')
         G_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='generator')
 
         # train_op
-        self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
-        self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
+        self.D_train_op = tf.train.RMSPropOptimizer(2e-4).minimize(self.D_loss, var_list = D_vars)
+        self.G_train_op = tf.train.RMSPropOptimizer(2e-4).minimize(self.G_loss, var_list = G_vars)
 
         # clip operation
         self.clip_op = [ p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in D_vars]
@@ -57,7 +57,7 @@ class WGAN(object):
         sess.run(tf.global_variables_initializer())
 
 
-    def discriminator(self, img, scope = 'discriminator', ndf = 128, reuse = False):
+    def discriminator(self, img, scope = 'discriminator', ndf = 64, reuse = False):
 
         with tf.variable_scope(scope, reuse = reuse):
 
@@ -91,7 +91,7 @@ class WGAN(object):
             
             return Z
         
-    def generator(self, z, scope = 'generator', ngf = 128):
+    def generator(self, z, scope = 'generator', ngf = 64):
 
         with tf.variable_scope(scope):
 
@@ -119,7 +119,7 @@ class WGAN(object):
 
             # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
             Z = conv2d_transpose(Z, filters = 3, kernel_size = (5, 5), strides = (2, 2),
-            activation = tf.nn.sigmoid, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
+            activation = tf.nn.tanh, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
             return Z
@@ -153,6 +153,7 @@ def plot(samples):
     gs.update(wspace=0.00, hspace=0.00)
 
     for i, sample in enumerate(samples):
+        sample = (sample + 1.0) / 2.0
         ax = plt.subplot(gs[i])
         plt.axis('off')
         ax.set_xticklabels([])
@@ -169,7 +170,11 @@ if __name__ == "__main__":
     model = WGAN(sess, epochs = EPOCHS)
     
     for i in range(EPOCHS):
-
+        if i == 0:
+            real = model.generate_real_img()
+            fig = plot(real)
+            fig.savefig('./result/real.png')
+            plt.close(fig)
 
         for j in range(model.batch_num):
 
