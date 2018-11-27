@@ -25,13 +25,12 @@ class WGAN(object):
 
         # discriminator for real image
         iterator = load_animation_face_iterator(file_list, epochs = epochs)
-        real_img = iterator.get_next()
-        real_img = tf.reshape(real_img, [-1, self.output_dimension[0],
+        self.real_img = iterator.get_next()
+        self.real_img = tf.reshape(self.real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])
-        print(real_img)
 
         # score and loss
-        self.score_real = self.discriminator(real_img)
+        self.score_real = self.discriminator(self.real_img)
         self.score_fake = self.discriminator(self.generated_img, reuse = True)
 
         self.D_loss = tf.reduce_mean(self.score_real) - tf.reduce_mean(self.score_fake)
@@ -134,6 +133,10 @@ class WGAN(object):
         z = self.sample_z(self.batch_size, self.z_d)
         fake_img = self.sess.run(self.generated_img, feed_dict = {self.z : z})
         return fake_img
+    
+    def generate_real_img(self):
+        real_img = self.sess.run(self.real_img)
+        return real_img
 
 def plot(samples):
     fig = plt.figure(figsize=(20, 20))
@@ -160,6 +163,11 @@ if __name__ == "__main__":
         generated = model.generate_testing_img()
         fig = plot(generated)
         plt.show(fig)
+
+        real = model.generate_real_img()
+        fig = plot(real)
+        plt.show(fig)
+
 
         for j in range(model.batch_num):
 

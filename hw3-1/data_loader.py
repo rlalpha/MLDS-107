@@ -16,7 +16,7 @@ def load_animation_face_iterator(file_list, epochs = 10, resized_img = (64, 64),
 
     def load_image(img_path):
         img_file = tf.read_file(img_path)
-        img_decoded = tf.image.decode_image(img_file, channels=3, dtype= tf.float32) / 255
+        img_decoded = tf.image.decode_image(img_file, channels=3, dtype= tf.float32)
         img_decoded = tf.image.resize_image_with_crop_or_pad(img_decoded, resized_img[0], resized_img[1])
 
         return img_decoded
