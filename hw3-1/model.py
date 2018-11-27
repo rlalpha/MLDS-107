@@ -10,7 +10,7 @@ from tensorflow.layers import conv2d, max_pooling2d, batch_normalization, dense,
 class WGAN(object):
     
     # def init
-    def __init__(self, sess, z_d = 1000, batch_size = 32, log_path = "./log"):
+    def __init__(self, sess, z_d = 1000, batch_size = 32, epochs = 20, log_path = "./log"):
         self.sess = sess
         self.z_d = z_d
         self.output_dimension = (64, 64, 3)
@@ -24,7 +24,9 @@ class WGAN(object):
         self.generated_img = self.generator(self.z)
 
         # discriminator for real image
-        real_img = load_animation_face_iterator(file_list).get_next()
+        iterator = load_animation_face_iterator(file_list)
+        iterator.repeat(epochs)
+        real_img = iterator.get_next()
         real_img = tf.reshape(real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])
         print(real_img)
@@ -152,10 +154,8 @@ def plot(samples):
 if __name__ == "__main__":
 
     sess = tf.Session()
-
-    model = WGAN(sess)
-
     EPOCHS = 10
+    model = WGAN(sess, epochs = EPOCHS)
     
     for i in range(EPOCHS):
         generated = model.generate_testing_img()
@@ -164,8 +164,10 @@ if __name__ == "__main__":
 
         for j in range(model.batch_num):
 
-            model.train_D()
+            D_loss = model.train_D()
 
-            model.train_G()
+            G_loss = model.train_G()
+
+        print ('D_loss:', D_loss, 'G_loss', G_loss)
         
 
