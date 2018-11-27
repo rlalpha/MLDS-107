@@ -125,7 +125,7 @@ class WGAN(object):
             return Z
 
     def sample_z(self, m, n):
-        return np.random.uniform(-1., 1., size=[m, n])
+        return np.random.normal(size=[m, n])
 
     def train_D(self):
         z = self.sample_z(self.batch_size, self.z_d)
@@ -173,7 +173,12 @@ if __name__ == "__main__":
 
         for j in range(model.batch_num):
 
-            for k in range(5):
+            if i < 1 and j < 25:
+                n_c = 100
+            else:
+                n_c = 5
+            
+            for k in range(n_c):
                 D_loss = model.train_D()
 
             G_loss = model.train_G()

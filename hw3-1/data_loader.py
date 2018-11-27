@@ -30,5 +30,8 @@ def load_animation_face_iterator(file_list, epochs = 10, resized_img = (64, 64),
     return dataset_iterator
 
 if __name__ == "__main__":
+
+    sess = tf.Session()
     file_list = load_image_file_list()
-    print(load_animation_face_iterator(file_list))
+    next_element = load_animation_face_iterator(file_list).get_next()
+    print(sess.run(next_element))
