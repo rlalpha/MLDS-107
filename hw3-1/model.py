@@ -24,8 +24,7 @@ class WGAN(object):
         self.generated_img = self.generator(self.z)
 
         # discriminator for real image
-        iterator = load_animation_face_iterator(file_list)
-        iterator.repeat(epochs)
+        iterator = load_animation_face_iterator(file_list, epochs = epochs)
         real_img = iterator.get_next()
         real_img = tf.reshape(real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])

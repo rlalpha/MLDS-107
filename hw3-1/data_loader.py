@@ -9,7 +9,7 @@ def load_image_file_list( dir = './faces' ) :
     file_list = glob.glob(dir + '/*.jpg')
     return file_list
 
-def load_animation_face_iterator(file_list, resized_img = (64, 64), batch_size = 32):
+def load_animation_face_iterator(file_list, epochs = 10, resized_img = (64, 64), batch_size = 32):
 
     # loading the file name
     img_path = Dataset.from_tensor_slices(file_list)
@@ -22,7 +22,9 @@ def load_animation_face_iterator(file_list, resized_img = (64, 64), batch_size =
         return img_decoded
     
     # mapping the image
-    img_decoded = img_path.map(load_image).batch(batch_size)
+    img_decoded = img_path.map(load_image)
+    img_decoded = img_decoded.repeat(epochs)
+    img_decoded = img_decoded.batch(batch_size)
     dataset_iterator = img_decoded.make_one_shot_iterator()
 
     return dataset_iterator
