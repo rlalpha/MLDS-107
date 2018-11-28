@@ -15,6 +15,7 @@ class WGAN(object):
         self.z_d = z_d
         self.output_dimension = (64, 64, 3)
         self.batch_size = batch_size
+        self.is_training = tf.placeholder(tf.bool, shape = ())
 
         file_list = load_image_file_list()
         self.batch_num = int(len(file_list) / batch_size)
@@ -41,8 +42,10 @@ class WGAN(object):
         G_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='generator')
 
         # train_op
-        self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
-        self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
+            self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
 
         # clip operation
         self.clip_op = [ p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in D_vars]
@@ -57,7 +60,7 @@ class WGAN(object):
         sess.run(tf.global_variables_initializer())
 
 
-    def discriminator(self, img, scope = 'discriminator', ndf = 128, reuse = False):
+    def discriminator(self, img, scope = 'discriminator', ndf = 64, reuse = False):
 
         with tf.variable_scope(scope, reuse = reuse):
 
@@ -69,19 +72,19 @@ class WGAN(object):
             # layer 2 None, 32 ,32, ndf --> None, 16, 16, ndf * 2
             Z = conv2d(Z, filters = ndf * 2, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # layer 3 None, 16 ,16, ndf * 2 --> None, 8, 8, ndf * 4
             Z = conv2d(Z, filters = ndf * 4, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # layer 4 None, 8 ,8, ndf * 4 --> None, 4, 4, ndf * 8
             Z = conv2d(Z, filters = ndf * 8, kernel_size = (5, 5), strides = (2, 2)
             , activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # Dense Layer
@@ -91,7 +94,7 @@ class WGAN(object):
             
             return Z
         
-    def generator(self, z, scope = 'generator', ngf = 128):
+    def generator(self, z, scope = 'generator', ngf = 64):
 
         with tf.variable_scope(scope):
 
@@ -102,19 +105,19 @@ class WGAN(object):
             # layer 1 None, 4, 4, 8 * ngf --> None, 8, 8, 4 * ngf
             Z = conv2d_transpose(input_img, filters = 4 * ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # layer 2 None, 8, 8, 4 * ngf --> None, 16, 16, 2 * ngf
             Z = conv2d_transpose(Z, filters = 2 * ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # layer 3 None, 16, 16, 2 * ngf --> None, 32, 32, ngf
             Z = conv2d_transpose(Z, filters = ngf, kernel_size = (5, 5), strides = (2, 2),
             activation = tf.nn.leaky_relu, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
-            Z = batch_normalization(Z)
+            Z = batch_normalization(Z, training = self.is_training)
             print(Z)
 
             # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
@@ -129,18 +132,18 @@ class WGAN(object):
 
     def train_D(self):
         z = self.sample_z(self.batch_size, self.z_d)
-        _, loss, _ = self.sess.run([self.D_train_op, self.D_loss, self.clip_op], feed_dict = {self.z : z})
+        _, loss, _ = self.sess.run([self.D_train_op, self.D_loss, self.clip_op], feed_dict = {self.z : z, self.is_training : True})
         return loss
     
     def train_G(self):
         z = self.sample_z(self.batch_size, self.z_d)
-        _, loss, summary = self.sess.run([self.G_train_op, self.G_loss, self.merged], feed_dict = {self.z : z})
+        _, loss, summary = self.sess.run([self.G_train_op, self.G_loss, self.merged], feed_dict = {self.z : z, self.is_training : True})
         self.train_writer.add_summary(summary)
         return loss
     
     def generate_testing_img(self):
         z = self.sample_z(self.batch_size, self.z_d)
-        fake_img = self.sess.run(self.generated_img, feed_dict = {self.z : z})
+        fake_img = self.sess.run(self.generated_img, feed_dict = {self.z : z, self.is_training : False})
         return fake_img
     
     def generate_real_img(self):
