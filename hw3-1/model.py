@@ -10,7 +10,7 @@ from tensorflow.layers import conv2d, max_pooling2d, batch_normalization, dense,
 class WGAN(object):
     
     # def init
-    def __init__(self, sess, z_d = 100, batch_size = 32, epochs = 20, log_path = "./log"):
+    def __init__(self, sess, z_d = 100, batch_size = 64, epochs = 20, log_path = "./log"):
         self.sess = sess
         self.z_d = z_d
         self.output_dimension = (64, 64, 3)
@@ -24,7 +24,7 @@ class WGAN(object):
         self.generated_img = self.generator(self.z)
 
         # discriminator for real image
-        iterator = load_animation_face_iterator(file_list, epochs = epochs + 20)
+        iterator = load_animation_face_iterator(file_list, epochs = epochs + 20, batch_size = batch_size)
         self.real_img = iterator.get_next()
         self.real_img = tf.reshape(self.real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])
@@ -149,7 +149,7 @@ class WGAN(object):
 
 def plot(samples):
     fig = plt.figure(figsize=(20, 20))
-    gs = gridspec.GridSpec(4, 8)
+    gs = gridspec.GridSpec(8, 8)
     gs.update(wspace=0.00, hspace=0.00)
 
     for i, sample in enumerate(samples):
