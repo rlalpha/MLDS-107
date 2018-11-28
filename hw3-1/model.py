@@ -44,8 +44,8 @@ class WGAN(object):
         # train_op
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
-            self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
-            self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
+            self.D_train_op = tf.train.RMSPropOptimizer(2e-4).minimize(self.D_loss, var_list = D_vars)
+            self.G_train_op = tf.train.RMSPropOptimizer(2e-4).minimize(self.G_loss, var_list = G_vars)
 
 
         # clip operation
