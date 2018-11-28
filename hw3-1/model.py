@@ -10,7 +10,7 @@ from tensorflow.layers import conv2d, max_pooling2d, batch_normalization, dense,
 class WGAN(object):
     
     # def init
-    def __init__(self, sess, z_d = 100, batch_size = 32, epochs = 20, log_path = "./log"):
+    def __init__(self, sess, z_d = 100, batch_size = 64, epochs = 20, log_path = "./log"):
         self.sess = sess
         self.z_d = z_d
         self.output_dimension = (64, 64, 3)
@@ -25,7 +25,7 @@ class WGAN(object):
         self.generated_img = self.generator(self.z)
 
         # discriminator for real image
-        iterator = load_animation_face_iterator(file_list, epochs = epochs + 20)
+        iterator = load_animation_face_iterator(file_list, epochs = epochs + 20, batch_size = batch_size)
         self.real_img = iterator.get_next()
         self.real_img = tf.reshape(self.real_img, [-1, self.output_dimension[0],
         self.output_dimension[1], self.output_dimension[2]])
@@ -34,8 +34,8 @@ class WGAN(object):
         self.score_real = self.discriminator(self.real_img)
         self.score_fake = self.discriminator(self.generated_img, reuse = True)
 
-        self.D_loss = tf.reduce_mean(self.score_real) - tf.reduce_mean(self.score_fake)
-        self.G_loss = tf.reduce_mean(self.score_fake)
+        self.D_loss = - tf.reduce_mean(self.score_real) + tf.reduce_mean(self.score_fake)
+        self.G_loss = - tf.reduce_mean(self.score_fake)
 
         # collection of variable
         D_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='discriminator')
@@ -46,6 +46,7 @@ class WGAN(object):
         with tf.control_dependencies(update_ops):
             self.D_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.D_loss, var_list = D_vars)
             self.G_train_op = tf.train.RMSPropOptimizer(- 2e-4).minimize(self.G_loss, var_list = G_vars)
+
 
         # clip operation
         self.clip_op = [ p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in D_vars]
@@ -122,7 +123,7 @@ class WGAN(object):
 
             # layer 4 None, 32, 32, ngf --> None, 64, 64, 3
             Z = conv2d_transpose(Z, filters = 3, kernel_size = (5, 5), strides = (2, 2),
-            activation = tf.nn.sigmoid, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
+            activation = tf.nn.tanh, padding = "same", kernel_initializer = tf.random_normal_initializer(stddev=0.02))
             print(Z)
 
             return Z
@@ -152,10 +153,11 @@ class WGAN(object):
 
 def plot(samples):
     fig = plt.figure(figsize=(20, 20))
-    gs = gridspec.GridSpec(4, 8)
+    gs = gridspec.GridSpec(8, 8)
     gs.update(wspace=0.00, hspace=0.00)
 
     for i, sample in enumerate(samples):
+        sample = (sample + 1.0) / 2.0
         ax = plt.subplot(gs[i])
         plt.axis('off')
         ax.set_xticklabels([])
@@ -172,7 +174,11 @@ if __name__ == "__main__":
     model = WGAN(sess, epochs = EPOCHS)
     
     for i in range(EPOCHS):
-
+        if i == 0:
+            real = model.generate_real_img()
+            fig = plot(real)
+            fig.savefig('./result/real.png')
+            plt.close(fig)
 
         for j in range(model.batch_num):
 
